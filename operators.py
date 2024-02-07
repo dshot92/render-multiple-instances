@@ -41,7 +41,8 @@ class MESH_OT_Save_and_Render(bpy.types.Operator):
         context.scene.render.use_overwrite = False
         context.scene.render.use_placeholder = True
 
-        bpy.ops.wm.save_mainfile()  # Save file to ensure last changes are saved
+        # Save file to ensure last changes are saved
+        bpy.ops.wm.save_mainfile()
 
         context.scene.render.use_overwrite = use_overwrite
         context.scene.render.use_placeholder = use_placeholder
@@ -108,7 +109,8 @@ class MESH_OT_ffmpeg_renders(bpy.types.Operator):
 
         if output_file_path == "":
             output_file_path = os.path.join(
-                parent_render_path, render_filename + f"_{encoder}_{quality}.mp4")
+                parent_render_path,
+                render_filename + f"_{encoder}_{quality}.mp4")
 
         path_exists = os.path.isdir(render_folder)
 

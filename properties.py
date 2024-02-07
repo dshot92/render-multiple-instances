@@ -63,7 +63,9 @@ class Render_Script_Props(bpy.types.PropertyGroup):
 
     mp4_file: bpy.props.StringProperty(
         name="mp4_file",
-        description="Select an output path.\nIf left blank the file will be created automatically in the export folder ",
+        description="""Select an output path.\n 
+                        If left blank the file will be created
+                        automatically in the export folder """,
         subtype='FILE_PATH', default=r"")
 
 

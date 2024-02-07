@@ -33,7 +33,7 @@ class CreateRenderScriptPreferences(bpy.types.AddonPreferences):
         box = layout.box()
         box.label(text="Enable Console Debug Print")
         box.prop(self, "debug")
-    
+
     terminal_emulator: bpy.props.EnumProperty(
         name="terminal_emulator",
         description="Select Terminal",

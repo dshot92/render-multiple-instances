@@ -13,10 +13,9 @@ import subprocess
 from .preferences import getPreferences
 
 # List of wanter encoders
-# enc = ["libx264", "libx265", "hevc_nvenc"]
-# enc = ["libx264", "libx265", "hevc_nvenc"]
+enc = ["libx264", "libx265", "hevc_nvenc"]
+enc = ["libx264", "libx265", "hevc_nvenc"]
 enc = ["libx265", "libaom-av1"]
-
 
 
 def make_executable(path):
@@ -30,7 +29,8 @@ def is_ffmpeg_installed():
         cmd = ["ffprobe", "-version"]
         _ = subprocess.check_output(cmd)
         return True
-    except:
+    except Exception as e:
+        print("ERROR ", e)
         return False
 
 
@@ -50,8 +50,11 @@ def get_render_path():
     path_render = (os.path.realpath(
         bpy.path.abspath(bpy.context.scene.render.filepath)))
 
-    #   Folder path:  //export/folder_001/           ->  //export/folder_001/####.png
-    # Sequence path:  //export/folder_002/sequence_  ->  //export/folder_002/sequence_####.png
+    # Folder path:
+    #  //export/folder_001/           ->  //export/folder_001/####.png
+    # Sequence path:
+    #  //export/folder_002/sequence_  ->  //export/folder_002/sequence_####.png
+
     last_char = bpy.context.scene.render.filepath[-1]
     if last_char in "/\\":
         # Folder path
@@ -73,17 +76,21 @@ def get_render_path():
 def get_render_command(blend_file_path, blender_path, start_frame, end_frame):
 
     if platform.system() == "Windows":
-        ### WINDOWS SCRIPT ###
-        command = f'start "" "{blender_path}" -b "{blend_file_path}" -s {start_frame} -e {end_frame} -a'
+        # ** WINDOWS SCRIPT **
+        command = f'start "" " {blender_path}" '
+        + '-b "{blend_file_path}" '
+        + '-s {start_frame} -e {end_frame} -a'
     elif platform.system() == "Darwin":
-        ### MACOS SCRIPT ###
+        # ** MACOS SCRIPT **
         command = "i have no idea what how to test this"
     else:
-        ### LINUX SCRIPT ###
+        # ** LINUX SCRIPT **
         term = getPreferences().terminal_emulator.split(" ")
         term = " ".join(term)
-        print(term)
-        command = f'{term} {blender_path} -b "{blend_file_path}" -s {start_frame} -e {end_frame} -a &'
+        # print(term)
+        command = f'{term} {blender_path} '
+        + '-b "{blend_file_path}" '
+        + '-s {start_frame} -e {end_frame} -a &'
 
     return command
 
@@ -93,7 +100,7 @@ def get_frame_list(render_folder, duration):
     frame_list_file = os.path.join(render_folder, "ffmpeg_input.txt")
 
     files = []
-    for file in glob.glob(render_folder + os.sep + f"*.png"):
+    for file in glob.glob(render_folder + os.sep + "*.png"):
         files.append(file)
 
     files.sort()
@@ -104,7 +111,8 @@ def get_frame_list(render_folder, duration):
                 outfile.write(f"file '{file}'\n")
                 outfile.write(f"duration {duration}\n")
         outfile.close()
-    except FileNotFoundError:
+    except FileNotFoundError as e:
+        print('Error ', e)
         print(f"The {frame_list_file} does not exist")
 
     return frame_list_file
@@ -115,7 +123,7 @@ def get_ffmpeg_command(render_folder, duration, fps, encoder, quality, output_fi
     frame_list_file = os.path.join(render_folder, "ffmpeg_input.txt")
 
     files = []
-    for file in glob.glob(render_folder + os.sep + f"*.png"):
+    for file in glob.glob(render_folder + os.sep + "*.png"):
         files.append(file)
 
     files.sort()
@@ -136,15 +144,21 @@ def get_ffmpeg_command(render_folder, duration, fps, encoder, quality, output_fi
     # https://ntown.at/de/knowledgebase/cuda-gpu-accelerated-h264-h265-hevc-video-encoding-with-ffmpeg/
 
     if encoder == "libx264":
-        ffmpeg_command = f'ffmpeg -safe 0 -r {fps} -f concat -i "{frame_list_file}" -c:v {encoder} -crf {quality} "{output_file}" -y'
-        #ffmpeg_command = f'ffmpeg -safe 0 -r {fps} -f concat -i "{frame_list_file}" -pix_fmt yuv420p -c:v {encoder} -crf {quality} -tune fastdecode "{output_file}" -y'
+        ffmpeg_command = f'ffmpeg -safe 0 -r {fps} -f concat -i '
+        + '"{ frame_list_file}" -c:v {encoder} -crf '
+        + '{quality} "{output_file}" -y'
+        # ffmpeg_command = f'ffmpeg -safe 0 -r {fps} -f concat -i "{frame_list_file}" -pix_fmt yuv420p -c:v {encoder} -crf {quality} -tune fastdecode "{output_file}" -y'
     elif encoder == "libx265":
         # ffmpeg -i input.mov -pix_fmt yuv420p -c:v libx265 -crf 18 -tune fastdecode -g 1 output.mp4
-        ffmpeg_command = f'ffmpeg -safe 0 -r {fps} -f concat -i "{frame_list_file}" -pix_fmt yuv420p -c:v {encoder} -crf {quality} -tune fastdecode -g 1 "{output_file}" -y'
+        ffmpeg_command = f'ffmpeg -safe 0 -r {fps} -f concat -i '
+        + '"{frame_list_file}" -pix_fmt yuv420p -c:v { encoder} -crf '
+        + '{quality} -tune fastdecode -g 1 "{output_file}" -y'
     elif encoder == "libaom-av1":
         print("libaom-av1")
         # ffmpeg -i input.mov -pix_fmt yuv420p -c:v libx265 -crf 18 -tune fastdecode -g 1 output.mp4
-        ffmpeg_command = f'ffmpeg -strict -2 -safe 0 -r {fps} -f concat -i "{frame_list_file}" -c:v {encoder} -strict -2 -crf {quality} "{output_file}" -y'
+        ffmpeg_command = f'ffmpeg -strict -2 -safe 0 -r {fps} -f concat -i '
+        + '"{ frame_list_file}" -c:v {encoder} -strict -2 -crf '
+        + '{quality} "{output_file}" -y'
 
     if platform.system() == "Windows":
         ffmpeg_command = 'start "" ' + ffmpeg_command

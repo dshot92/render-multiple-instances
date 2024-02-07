@@ -41,7 +41,8 @@ if "bpy" in locals():
 
 
 def cleanse_modules():
-    """search for your plugin modules in blender python sys.modules and remove them"""
+    """search for your plugin modules in blender
+    python sys.modules and remove them"""
     for module_name in sorted(sys.modules.keys()):
         if module_name.startswith(__name__):
             del sys.modules[module_name]
