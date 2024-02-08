@@ -1,5 +1,8 @@
 # Render Script Addon
 
+4.1 Panel api wont work for 4.0 and lesser version.
+checkout the 4.0 tag
+
 ## Installation
 
 1. In blender, go to: Edit -> Preferences -> Add-ons -> Install.
