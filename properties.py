@@ -16,13 +16,13 @@ class Render_Script_Props(bpy.types.PropertyGroup):
     start_frame: bpy.props.IntProperty(
         name="Start Frame",
         description="Start Frame",
-        default=1001,
+        default=1,
     )
 
     end_frame: bpy.props.IntProperty(
         name="End Frame",
         description="End Frame",
-        default=1250,
+        default=250,
     )
 
     instances: bpy.props.IntProperty(
