@@ -86,7 +86,7 @@ def get_render_command(blend_file_path, blender_path, start_frame, end_frame):
         term = getPreferences().terminal_emulator.split(" ")
         term = " ".join(term)
         # print(term)
-        command = [f"{term}", "{blender_path}", "-b", f'"{blend_file_path}"',
+        command = [f"{term}", f"{blender_path}", "-b", f'"{blend_file_path}"',
                    "-s", f"{start_frame}", "-e", f"{end_frame}", "-a", "&"]
 
     return ' '.join(command)
@@ -145,7 +145,8 @@ def get_ffmpeg_command(render_folder, duration, fps, encoder, quality, output_fi
         # -i "{frame_list_file}" -pix_fmt yuv420p -c:v {encoder}
         # -crf {quality} -tune fastdecode "{output_file}" -y'
         ffmpeg_command = ["ffmpeg", "-safe", "0", "-r", f"{fps}", "-f",
-                          "concat", "-i", f'"{frame_list_file}"', "-c:v",
+                          "concat", "-i", f'"{frame_list_file}"',
+                          "-pix_fmt", "yuv420p", "-c:v",
                           f"{encoder}", "-crf", f"{quality}",
                           f'"{output_file}"', "-y"]
 
