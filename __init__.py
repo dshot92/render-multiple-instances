@@ -14,7 +14,7 @@ import sys
 
 bl_info = {
     "name": "Render Multiple Instances",
-    "version": (2, 5, 0),
+    "version": (2, 6, 0),
     "author": "DShot92 <dshot92@gmail.com>",
     "blender": (2, 83, 20),
     "category": "Render",
