@@ -1,6 +1,6 @@
 schema_version = "1.0.0"
 
-id = "render-multiple-instances"
+id = "render_multiple_instances"
 version = "2.6.0"
 name = "Render Multiple Instances"
 tagline = "Render animations faster with multiple instances."
