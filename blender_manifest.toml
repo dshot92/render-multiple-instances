@@ -1,0 +1,38 @@
+schema_version = "1.0.0"
+
+id = "render-multiple-instances"
+version = "2.6.0"
+name = "Render Multiple Instances"
+tagline = "Render animations faster with multiple instances."
+maintainer = "Daniele Stochino <dshot92@gmail.com>"
+# Supported types: "add-on", "theme"
+type = "add-on"
+
+# Optional: add-ons can list which resources they will require:
+# * "files" (for access of any filesystem operations)
+# * "network" (for internet access)
+# * "camera" (to capture photos and videos)
+# * "microphone" (to capture audio)
+# permissions = []
+
+# Optional link to documentation, support, source files, etc
+website = "https://github.com/dshot92/render-multiple-instances"
+
+# Optional list defined by Blender and server, see:
+# https://docs.blender.org/manual/en/dev/extensions/tags.html
+tags = ["Render", "Pipiline"]
+
+blender_version_min = "4.2.0"
+# Optional: maximum supported Blender version
+# blender_version_max = "5.1.0"
+
+# License conforming to https://spdx.org/licenses/ (use "SPDX: prefix)
+# https://docs.blender.org/manual/en/dev/extensions/licenses.html
+license = [
+  "SPDX:GPL-2.0-or-later",
+]
+# Optional: required by some licenses.
+copyright = [
+  "2020-2024 Daniele Stochino"
+]
+
