@@ -40,7 +40,7 @@ class RENDER_PT_RenderScriptInstances_4_2(bpy.types.Panel):
         if panel:
             panel.prop(props, "instances", text="Num Instances")
             panel.operator(
-                'mesh.save_and_render',
+                "mesh.save_and_render",
                 text="Save and Render",
                 icon="RENDER_ANIMATION",
             )
@@ -55,17 +55,19 @@ class RENDER_PT_RenderScriptInstances_4_2(bpy.types.Panel):
                 panel.label(text="Check Addon README.md for more info.")
             else:
                 panel.prop(props, "quality", text="Quality")
-                panel.prop(props, 'encoder', text="Encoder")
+                panel.prop(props, "encoder", text="Encoder")
                 panel.prop(props, "mp4_file", text="Mp4 save path")
 
-                panel.operator(
-                    'mesh.ffmpeg_renders',
+                row = panel.row()
+
+                row.operator(
+                    "mesh.ffmpeg_renders",
                     text="Create video from frames",
                     icon="SEQUENCE")
 
         # Open render foldore button
         layout.operator(
-            'mesh.open_render_folder',
+            "mesh.open_render_folder",
             text="Open render folder",
             icon="FILE_FOLDER")
 
@@ -86,10 +88,10 @@ class RENDER_PT_RenderScriptInstances(bpy.types.Panel):
 
 class RENDER_PT_OverrideFrameRange(bpy.types.Panel):
     bl_label = "Override Frame Range"
-    bl_space_type = 'PROPERTIES'
+    bl_space_type = "PROPERTIES"
     bl_region_type = "WINDOW"
     bl_parent_id = "RENDER_PT_RenderScriptInstances"
-    bl_options = {'DEFAULT_CLOSED'}
+    bl_options = {"DEFAULT_CLOSED"}
 
     def draw_header(self, context):
         props = context.scene.Render_Script_Props
@@ -109,7 +111,7 @@ class RENDER_PT_OverrideFrameRange(bpy.types.Panel):
 
 class RENDER_PT_CreateRenderScript(bpy.types.Panel):
     bl_label = "Render Instances"
-    bl_space_type = 'PROPERTIES'
+    bl_space_type = "PROPERTIES"
     bl_region_type = "WINDOW"
     bl_parent_id = "RENDER_PT_RenderScriptInstances"
 
@@ -124,7 +126,7 @@ class RENDER_PT_CreateRenderScript(bpy.types.Panel):
         col.prop(props, "instances", text="Num Instances")
         # col.prop(props, "auto_render", text="Launch Render Script")
         col.operator(
-            'mesh.save_and_render',
+            "mesh.save_and_render",
             text="Save and Render",
             icon="RENDER_ANIMATION",
         )
@@ -132,7 +134,7 @@ class RENDER_PT_CreateRenderScript(bpy.types.Panel):
 
 class RENDER_PT_CreateVideoFile(bpy.types.Panel):
     bl_label = "Sequence to .mp4"
-    bl_space_type = 'PROPERTIES'
+    bl_space_type = "PROPERTIES"
     bl_region_type = "WINDOW"
     bl_parent_id = "RENDER_PT_RenderScriptInstances"
 
@@ -152,11 +154,11 @@ class RENDER_PT_CreateVideoFile(bpy.types.Panel):
             col.label(text="Check Addon README.md for more info.")
         else:
             col.prop(props, "quality", text="High [1 -> 50] Low")
-            col.prop(props, 'encoder', text="Encoder")
+            col.prop(props, "encoder", text="Encoder")
             col.prop(props, "mp4_file", text="Mp4 file")
 
             col.operator(
-                'mesh.ffmpeg_renders',
+                "mesh.ffmpeg_renders",
                 text="Create video from frames",
                 icon="SEQUENCE",
             )
@@ -164,7 +166,7 @@ class RENDER_PT_CreateVideoFile(bpy.types.Panel):
 
 class RENDER_PT_OpenRenderFolder(bpy.types.Panel):
     bl_label = "Open Render Folder"
-    bl_space_type = 'PROPERTIES'
+    bl_space_type = "PROPERTIES"
     bl_region_type = "WINDOW"
     bl_parent_id = "RENDER_PT_RenderScriptInstances"
     bl_options = {"HIDE_HEADER"}
@@ -174,7 +176,7 @@ class RENDER_PT_OpenRenderFolder(bpy.types.Panel):
         col = layout.column()
 
         col.operator(
-            'mesh.open_render_folder',
+            "mesh.open_render_folder",
             text="Open render folder",
             icon="FILE_FOLDER",
         )
