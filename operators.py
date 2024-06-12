@@ -6,12 +6,17 @@
 
 import bpy
 import os
-import platform
 import subprocess
 
 from .preferences import getPreferences
-from .utils import (get_render_path, get_render_command,
-                    get_frame_list, get_ffmpeg_command)
+from .utils import (
+    isWindows,
+    isMacOS,
+    isLinux,
+    get_render_path,
+    get_render_command,
+    get_ffmpeg_command
+)
 
 
 class MESH_OT_Save_and_Render(bpy.types.Operator):
@@ -166,15 +171,16 @@ class MESH_OT_open_render_folder(bpy.types.Operator):
 
         path_exists = os.path.isdir(path)
 
-        if path_exists:
-            if platform.system() == "Windows":
-                os.startfile(path)
-            elif platform.system() == "Darwin":
-                subprocess.Popen(["open", path])
-            else:
-                subprocess.Popen(["xdg-open", path])
-        else:
+        if not path_exists:
             self.report({'ERROR'}, "Render folder not found")
+            return {'CANCELLED'}
+
+        if isWindows():
+            os.startfile(path)
+        elif isMacOS():
+            subprocess.Popen(["open", path])
+        elif isLinux():
+            subprocess.Popen(["xdg-open", path])
 
         return {'FINISHED'}
 

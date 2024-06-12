@@ -71,6 +71,18 @@ def get_render_path():
     return parent_render_path, render_filename, path_render
 
 
+def isWindows():
+    return os.name == 'nt'
+
+
+def isMacOS():
+    return os.name == 'posix' and platform.system() == "Dawriw"
+
+
+def isLinux():
+    return os.name == 'posix' and platform.system() == "Linux"
+
+
 def get_render_command(blend_file_path, blender_path, start_frame, end_frame):
 
     if platform.system() == "Windows":
