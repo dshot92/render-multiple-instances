@@ -42,7 +42,16 @@ class MESH_OT_Save_and_Render(bpy.types.Operator):
         context.scene.render.use_placeholder = True
 
         # Save file to ensure last changes are saved
-        bpy.ops.wm.save_mainfile()
+        try:
+            if not bpy.data.is_saved:
+                self.report(
+                    {'WARNING'}, "Blend file has never been saved before."
+                    + "Please save the file first.")
+                return {'CANCELLED'}
+            bpy.ops.wm.save_mainfile()
+        except RuntimeError as e:
+            self.report({'ERROR'}, f"Failed to save blend file: {e}")
+            return {'CANCELLED'}
 
         context.scene.render.use_overwrite = use_overwrite
         context.scene.render.use_placeholder = use_placeholder
