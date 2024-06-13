@@ -12,18 +12,18 @@ from . import (
 )
 import sys
 
-bl_info = {
-    "name": "Render Multiple Instances",
-    "version": (2, 6, 0),
-    "author": "DShot92 <dshot92@gmail.com>",
-    "blender": (2, 83, 20),
-    "category": "Render",
-    "location": "Output Properties > Render Multiple Instances",
-    "description": "Render animations faster with multiple instances.",
-    "warning": "",
-    "doc_url": "https://github.com/dshot92/blender_addons",
-    "tracker_url": "",
-}
+# bl_info = {
+#     "name": "Render Multiple Instances",
+#     "version": (2, 6, 0),
+#     "author": "DShot92 <dshot92@gmail.com>",
+#     "blender": (2, 83, 20),
+#     "category": "Render",
+#     "location": "Output Properties > Render Multiple Instances",
+#     "description": "Render animations faster with multiple instances.",
+#     "warning": "",
+#     "doc_url": "https://github.com/dshot92/blender_addons",
+#     "tracker_url": "",
+# }
 
 if "bpy" in locals():
     import importlib
