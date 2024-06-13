@@ -12,6 +12,19 @@ import subprocess
 
 from .preferences import getPreferences
 
+
+def isWindows():
+    return os.name == 'nt'
+
+
+def isMacOS():
+    return os.name == 'posix' and platform.system() == "Dawriw"
+
+
+def isLinux():
+    return os.name == 'posix' and platform.system() == "Linux"
+
+
 # List of wanter encoders
 enc = ["libx264", "libx265", "libaom-av1"]
 
@@ -62,18 +75,6 @@ def get_render_path():
     return parent_render_path, render_filename, path_render
 
 
-def isWindows():
-    return os.name == 'nt'
-
-
-def isMacOS():
-    return os.name == 'posix' and platform.system() == "Dawriw"
-
-
-def isLinux():
-    return os.name == 'posix' and platform.system() == "Linux"
-
-
 def get_render_command(blend_file_path, blender_path, start_frame, end_frame):
 
     if isWindows():
@@ -81,7 +82,9 @@ def get_render_command(blend_file_path, blender_path, start_frame, end_frame):
                    f'"{blend_file_path}"', "-s", f"{start_frame}", "-e",
                    f"{end_frame}", "-a"]
     elif isMacOS():
-        command = "i have no idea what how to test this"
+        command = ["open", "-a", f'"{blender_path}"', "--args", "-b",
+                   f'"{blend_file_path}"', "-s", f"{start_frame}", "-e",
+                   f"{end_frame}", "-a"]
     elif isLinux():
         term = getPreferences().terminal_emulator.split(" ")
         term = " ".join(term)
@@ -170,12 +173,11 @@ def get_ffmpeg_command(render_folder, duration, fps, encoder, quality, output_fi
     # Convert list to string
     ffmpeg_command = ' '.join(ffmpeg_command)
 
-    if platform.system() == "Windows":
+    if isWindows():
         ffmpeg_command = 'start "" ' + ffmpeg_command
-    elif platform.system() == "Darwin":
-        # No idea how to test it
-        ffmpeg_command = ffmpeg_command
-    else:
+    elif isMacOS():
+        ffmpeg_command = 'open -a Terminal.app --args ' + ffmpeg_command
+    elif isLinux():
         ffmpeg_command = ffmpeg_command + " &"
 
     return ffmpeg_command
