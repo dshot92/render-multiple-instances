@@ -48,22 +48,13 @@ def get_render_path():
     path_render = (os.path.realpath(
         bpy.path.abspath(bpy.context.scene.render.filepath)))
 
-    # Folder path:
-    #  //export/folder_001/           ->  //export/folder_001/####.png
-    # Sequence path:
-    #  //export/folder_002/sequence_  ->  //export/folder_002/sequence_####.png
-
     last_char = bpy.context.scene.render.filepath[-1]
     if last_char in "/\\":
-        # Folder path
-        # print("Folder path")
         path_render += os.sep
         render_filename = path_render.split(os.sep)[-2]
         parent_render_path = os.path.dirname(path_render)
         parent_render_path = os.path.dirname(parent_render_path)
     else:
-        # Sequence path
-        # print("Sequence path")
         render_filename = path_render.split(os.sep)[-2]
         path_render = os.path.dirname(path_render)
         parent_render_path = os.path.split(path_render)[0]
@@ -85,19 +76,15 @@ def isLinux():
 
 def get_render_command(blend_file_path, blender_path, start_frame, end_frame):
 
-    if platform.system() == "Windows":
-        # ** WINDOWS SCRIPT **
+    if isWindows():
         command = ["start", '""', f'"{blender_path}"', "-b",
                    f'"{blend_file_path}"', "-s", f"{start_frame}", "-e",
                    f"{end_frame}", "-a"]
-    elif platform.system() == "Darwin":
-        # ** MACOS SCRIPT **
+    elif isMacOS():
         command = "i have no idea what how to test this"
-    else:
-        # ** LINUX SCRIPT **
+    elif isLinux():
         term = getPreferences().terminal_emulator.split(" ")
         term = " ".join(term)
-        # print(term)
         command = [f"{term}", f"{blender_path}", "-b", f'"{blend_file_path}"',
                    "-s", f"{start_frame}", "-e", f"{end_frame}", "-a", "&"]
 
