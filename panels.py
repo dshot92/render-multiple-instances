@@ -31,11 +31,12 @@ class RENDER_PT_RenderScriptInstances_4_2(bpy.types.Panel):
             panel.prop(props, "end_frame", text="Frame End")
             panel.prop(props, "res_percentage", text="Res %")
             panel.prop(props, "instances", text="Num Instances")
+
             row = panel.row()
             row.operator(
                 "rmi.flipbook_viewport",
                 text="Flipbook Viewport",
-                icon="RENDER_ANIMATION",
+                icon="RESTRICT_VIEW_OFF",
             )
             row.operator(
                 "rmi.flipbook_render",
