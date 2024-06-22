@@ -10,9 +10,8 @@ import glob
 import subprocess
 
 from .utils import (
-    is_windows,
-    is_linux,
-    is_macos,
+    OperatingSystem,
+    get_blender_bin_path,
     get_export_dir,
     get_blend_file,
     get_export_parent_dir,
@@ -34,7 +33,7 @@ class MESH_OT_Save_and_Render(bpy.types.Operator):
 
         props = bpy.context.scene.Render_Script_Props
 
-        blender_bin_path = bpy.app.binary_path  # Blender Executable Path
+        blender_bin_path = get_blender_bin_path()
 
         blend_file_path = get_blend_file()
 
@@ -48,23 +47,23 @@ class MESH_OT_Save_and_Render(bpy.types.Operator):
             start_frame = props.start_frame
             end_frame = props.end_frame
 
-        # if override_range:
-        #     start_frame = props.start_frame
-        #     end_frame = props.end_frame
-
         cmd = []
-        if is_windows():
-            cmd = [f'"{blender_bin_path}"', "-b",
-                   f'"{blend_file_path}"', "-s", f"{start_frame}", "-e",
-                   f"{end_frame}", "-a"]
-        elif is_macos():
-            cmd = [f'"{blender_bin_path}"', "--args", "-b",
-                   f'"{blend_file_path}"', "-s", f"{start_frame}", "-e",
-                   f"{end_frame}", "-a"]
-        elif is_linux():
-            cmd = [f'{blender_bin_path}', "-b",
-                   f'{blend_file_path}', "-s", f"{start_frame}", "-e",
-                   f"{end_frame}", "-a"]
+
+        match OperatingSystem.detect_os():
+            case OperatingSystem.WINDOWS:
+                cmd = [f'"{blender_bin_path}"', "-b",
+                       f'"{blend_file_path}"', "-s", f"{start_frame}", "-e",
+                       f"{end_frame}", "-a"]
+            case OperatingSystem.MACOS:
+                cmd = [f'{blender_bin_path}', "--args", "-b",
+                       f'{blend_file_path}', "-s", f"{start_frame}", "-e",
+                       f"{end_frame}", "-a"]
+            case OperatingSystem.LINUX:
+                cmd = [f'{blender_bin_path}', "-b",
+                       f'{blend_file_path}', "-s", f"{start_frame}", "-e",
+                       f"{end_frame}", "-a"]
+            case OperatingSystem.UNKNOWN:
+                self.report({'ERROR'}, "Unknown OS")
 
         return get_platform_terminal_command_list(cmd)
 
