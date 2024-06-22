@@ -90,15 +90,16 @@ def get_platform_terminal_command_list(command_list):
     elif is_macos():
         return ["open", "-a", "Terminal.app", "--args"] + command_list
     elif is_linux():
-        desktop_environment = os.environ.get('XDG_CURRENT_DESKTOP', '')
-        if desktop_environment == 'GNOME':
-            return ["gnome-terminal", "--"] + command_list
-        elif desktop_environment == 'KDE':
-            return ["konsole", "--hold", "-e"] + command_list
-        elif desktop_environment == 'XFCE':
-            return ["xfce4-terminal", "--command"] + command_list
-        else:
-            return ["x-terminal-emulator", "-e"] + command_list
+        d_env = os.environ.get('XDG_CURRENT_DESKTOP', '')
+        match d_env:
+            case 'GNOME':
+                return ["gnome-terminal", "--"] + command_list
+            case 'KDE':
+                return ["konsole", "--hold", "-e"] + command_list
+            case 'XFCE':
+                return ["xfce4-terminal", "--command"] + command_list
+            case _:
+                return ["x-terminal-emulator", "-e"] + command_list
     else:
         raise RuntimeError("Unsupported platform")
 
