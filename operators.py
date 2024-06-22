@@ -138,10 +138,12 @@ class RENDER_OT_Flipbook_Viewport(bpy.types.Operator):
         print("viewport")
 
         # Store scene render settings
+        _use_stamp = context.scene.render.use_stamp
         _use_overwrite = context.scene.render.use_overwrite
         _use_placeholder = context.scene.render.use_placeholder
         _resolution_percentage = context.scene.render.resolution_percentage
 
+        context.scene.render.use_stamp = True
         context.scene.render.use_overwrite = False
         context.scene.render.use_placeholder = True
         context.scene.render.resolution_percentage = props.res_percentage
@@ -161,6 +163,7 @@ class RENDER_OT_Flipbook_Viewport(bpy.types.Operator):
         bpy.ops.render.opengl(animation=True)
 
         # Restore scene render settings
+        context.scene.render.use_stamp = _use_stamp
         context.scene.render.use_overwrite = _use_overwrite
         context.scene.render.use_placeholder = _use_placeholder
         context.scene.render.resolution_percentage = _resolution_percentage
@@ -177,23 +180,18 @@ class RENDER_OT_ffmpeg_encode(bpy.types.Operator):
     bl_label = "Encode rendered frames into video"
     bl_description = "Encode rendered frames into video"
 
-    def get_mp4_output_path(self):
+    def get_mp4_output_path(self) -> Path:
 
         props = bpy.context.scene.Render_Script_Props
 
         encoder = props.encoder
         quality = props.quality
 
-        mp4_path = bpy.context.scene.Render_Script_Props.mp4_file
         export_parent_dir = get_export_parent_dir()
+        export_dir = get_export_dir()
 
-        blend_file = get_blend_file()
-        blend_file = os.path.splitext(blend_file)[0]
-
-        if mp4_path == "":
-            mp4_path = os.path.join(
-                export_parent_dir,
-                blend_file + f"_{encoder}_{quality}.mp4")
+        mp4_path = export_parent_dir / \
+            f"{export_dir.name}_{encoder}_{quality}.mp4"
 
         return mp4_path
 
