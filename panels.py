@@ -66,8 +66,8 @@ class RENDER_PT_RenderScriptInstances_4_2(bpy.types.Panel):
 
         # Open render foldore button
         layout.operator(
-            "rmi.open_render_folder",
-            text="Open render folder",
+            "rmi.open_render_dir",
+            text="Open Render Directory",
             icon="FILE_FOLDER")
 
 
