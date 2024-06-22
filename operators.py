@@ -200,18 +200,16 @@ class RENDER_OT_ffmpeg_encode(bpy.types.Operator):
 
         frame_list_file = Path(export_dir, "ffmpeg_input.txt")
 
-        # Use list comprehension to get both .png and .jpg files
         files = [file for ext in ['*.png', '*.jpg', '*.jpeg']
                  for file in glob.glob(os.path.join(export_dir, ext))]
 
         files.sort()
 
         try:
-            with open(frame_list_file, "w+") as outfile:
+            with open(frame_list_file, "w") as frame_list:
                 for file in files:
-                    outfile.write(f"file '{file}'\n")
-                    outfile.write(f"duration {duration}\n")
-            outfile.close()
+                    frame_list.write(f"file '{file}'\n")
+                    frame_list.write(f"duration {duration}\n")
         except FileNotFoundError as e:
             print('Error ', e)
             print(f"The {frame_list_file} does not exist")
