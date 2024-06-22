@@ -21,14 +21,14 @@ from .utils import (
 )
 
 
-class MESH_OT_Save_and_Render(bpy.types.Operator):
+class RENDER_OT_Flipbook_Render(bpy.types.Operator):
     """
     Create render script
     """
 
-    bl_idname = "mesh.save_and_render"
-    bl_label = "Save and Render"
-    bl_description = "Save blend file and start Renders"
+    bl_idname = "rmi.flipbook_render"
+    bl_label = "Flipbook Render"
+    bl_description = "Flipbook Render"
 
     def get_render_command_list(self, context):
 
@@ -122,14 +122,60 @@ class MESH_OT_Save_and_Render(bpy.types.Operator):
         return {'FINISHED'}
 
 
-class MESH_OT_ffmpeg_renders(bpy.types.Operator):
+class RENDER_OT_Flipbook_Viewport(bpy.types.Operator):
     """
     Create render script
     """
 
-    bl_idname = "mesh.ffmpeg_renders"
-    bl_label = "Create video from frames"
-    bl_description = "Create video from frames"
+    bl_idname = "rmi.flipbook_viewport"
+    bl_label = "Flipbook Viewport"
+    bl_description = "Flipbook Viewport"
+
+    def execute(self, context):
+
+        props = bpy.context.scene.Render_Script_Props
+
+        print("viewport")
+
+        # Store scene render settings
+        _use_overwrite = context.scene.render.use_overwrite
+        _use_placeholder = context.scene.render.use_placeholder
+        _resolution_percentage = context.scene.render.resolution_percentage
+
+        context.scene.render.use_overwrite = False
+        context.scene.render.use_placeholder = True
+        context.scene.render.resolution_percentage = props.res_percentage
+
+        # Save file to ensure last changes are saved
+        try:
+            if not bpy.data.is_saved:
+                self.report(
+                    {'WARNING'}, "Blend file has never been saved before. Please save the file first.")
+                return {'CANCELLED'}
+            bpy.ops.wm.save_mainfile()
+        except RuntimeError as e:
+            self.report({'ERROR'}, f"Failed to save blend file: {e}")
+            return {'CANCELLED'}
+
+        # bpy.ops.render.opengl(animation=False, render_keyed_only=False, sequencer=False, write_still=False, view_context=True)
+        bpy.ops.render.opengl(animation=True)
+
+        # Restore scene render settings
+        context.scene.render.use_overwrite = _use_overwrite
+        context.scene.render.use_placeholder = _use_placeholder
+        context.scene.render.resolution_percentage = _resolution_percentage
+
+        return {'FINISHED'}
+
+
+class RENDER_OT_ffmpeg_encode(bpy.types.Operator):
+    """
+    Create render script
+    """
+
+    bl_idname = "rmi.ffmpeg_encode"
+    bl_label = "Encode rendered frames into video"
+    bl_description = "Encode rendered frames into video"
 
     def get_mp4_output_path(self):
 
@@ -160,7 +206,7 @@ class MESH_OT_ffmpeg_renders(bpy.types.Operator):
         frame_list_file = Path(export_dir, "ffmpeg_input.txt")
 
         # Use list comprehension to get both .png and .jpg files
-        files = [file for ext in ['*.png', '*.jpg']
+        files = [file for ext in ['*.png', '*.jpg', '*.jpeg']
                  for file in glob.glob(os.path.join(export_dir, ext))]
 
         files.sort()
@@ -234,12 +280,12 @@ class MESH_OT_ffmpeg_renders(bpy.types.Operator):
         return {'FINISHED'}
 
 
-class MESH_OT_open_render_folder(bpy.types.Operator):
+class UI_OT_open_render_folder(bpy.types.Operator):
     """
     Create render script
     """
 
-    bl_idname = "mesh.open_render_folder"
+    bl_idname = "rmi.open_render_folder"
     bl_label = "Open render folder"
     bl_description = "Open render folder"
 
@@ -256,8 +302,11 @@ class MESH_OT_open_render_folder(bpy.types.Operator):
         return {'FINISHED'}
 
 
-classes = (MESH_OT_Save_and_Render,
-           MESH_OT_ffmpeg_renders,
-           MESH_OT_open_render_folder,)
+classes = (
+    RENDER_OT_Flipbook_Render,
+    RENDER_OT_Flipbook_Viewport,
+    RENDER_OT_ffmpeg_encode,
+    UI_OT_open_render_folder,
+)
 
 register, unregister = bpy.utils.register_classes_factory(classes)
