@@ -28,7 +28,7 @@ class Render_Script_Props(bpy.types.PropertyGroup):
     instances: bpy.props.IntProperty(
         name="Instances",
         description="Instances",
-        default=4,
+        default=3,
         min=1,
         soft_max=64,
     )
@@ -48,7 +48,7 @@ class Render_Script_Props(bpy.types.PropertyGroup):
     res_percentage: bpy.props.IntProperty(
         name="Resolution Percentage",
         description="Render Resolution Percentage",
-        default=50,
+        default=100,
         soft_min=1,
         soft_max=100
     )
