@@ -88,11 +88,11 @@ def get_export_parent_dir() -> Path:
 
 
 def get_platform_terminal_command_list(command_list: list) -> list:
-    """Append command to platform and distro temirnal launching command"""
     cmd = []
     match OperatingSystem.detect_os():
         case OperatingSystem.WINDOWS:
-            cmd = ["start", '""'] + command_list
+            # cmd = ["start", '""'] + command_list
+            cmd = ["cmd.exe", "/c", "start"] + command_list
         case OperatingSystem.MACOS:
             cmd = ["open", "-a", "Terminal.app", "--args"] + command_list
         case OperatingSystem.LINUX:

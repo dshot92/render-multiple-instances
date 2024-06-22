@@ -22,10 +22,6 @@ from .utils import (
 
 
 class RENDER_OT_Flipbook_Render(bpy.types.Operator):
-    """
-    Create render script
-    """
-
     bl_idname = "rmi.flipbook_render"
     bl_label = "Flipbook Render"
     bl_description = "Flipbook Render"
@@ -52,8 +48,8 @@ class RENDER_OT_Flipbook_Render(bpy.types.Operator):
 
         match OperatingSystem.detect_os():
             case OperatingSystem.WINDOWS:
-                cmd = [f'"{blender_bin_path}"', "-b",
-                       f'"{blend_file_path}"', "-s", f"{start_frame}", "-e",
+                cmd = [f'{blender_bin_path}', "-b",
+                       f'{blend_file_path}', "-s", f"{start_frame}", "-e",
                        f"{end_frame}", "-a"]
             case OperatingSystem.MACOS:
                 cmd = [f'{blender_bin_path}', "--args", "-b",
@@ -103,15 +99,16 @@ class RENDER_OT_Flipbook_Render(bpy.types.Operator):
         instances = props.instances
 
         cmd = self.get_render_command_list(context)
+        print(cmd)
 
-        if auto_render:
-            try:
-                for _ in range(instances):
-                    subprocess.Popen(cmd)
-            except Exception as e:
-                self.report(
-                    {'ERROR'}, f"Failed to launch Blender instances: {e}")
-                return {'CANCELLED'}
+        for _ in range(instances):
+            subprocess.Popen(cmd)
+            # match OperatingSystem.detect_os():
+            #     case OperatingSystem.WINDOWS:
+            #     case OperatingSystem.MACOS:
+            #         subprocess.Popen(cmd)
+            #     case OperatingSystem.LINUX:
+            #         subprocess.Popen(cmd)
 
         # Restore scene render settings
         context.scene.render.use_overwrite = _use_overwrite
