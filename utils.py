@@ -1,4 +1,4 @@
-
+# SPDX-License-Identifier: GPL-2.0-or-later
 
 # ----------------------------------------------------------
 # Author: Daniele Stochino (dshot92)
@@ -6,7 +6,6 @@
 
 import bpy
 import os
-import glob
 import platform
 import subprocess
 from pathlib import Path

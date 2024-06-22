@@ -23,25 +23,31 @@ class RENDER_PT_RenderScriptInstances_4_2(bpy.types.Panel):
         layout.use_property_split = True
 
         # Frame Range Override panel
-        header, panel = layout.panel("panel_frames", default_closed=True)
-        header.label(text="Overrides")
+        header, panel = layout.panel("panel_frames", default_closed=False)
+        header.label(text="Settings")
 
         if panel:
             # panel.prop(props, "override_range", text="Overrides")
             # panel.active = props.override_range
-            panel.prop(props, "start_frame")
-            panel.prop(props, "end_frame")
+            panel.prop(props, "start_frame", text="Frame Start")
+            panel.prop(props, "end_frame", text="Frame End")
             panel.prop(props, "res_percentage", text="Res %")
 
         # Render Instances panel
-        header, panel = layout.panel("panel_render", default_closed=False)
-        header.label(text="Render Instances")
+        # header, panel = layout.panel("panel_render", default_closed=False)
+        # header.label(text="Render Instances")
 
-        if panel:
+        # if panel:
             panel.prop(props, "instances", text="Num Instances")
-            panel.operator(
-                "mesh.save_and_render",
-                text="Save and Render",
+            row = panel.row()
+            row.operator(
+                "rmi.flipbook_viewport",
+                text="Flipbook Viewport",
+                icon="RENDER_ANIMATION",
+            )
+            row.operator(
+                "rmi.flipbook_render",
+                text="Flipbook Render",
                 icon="RENDER_ANIMATION",
             )
 
@@ -61,13 +67,13 @@ class RENDER_PT_RenderScriptInstances_4_2(bpy.types.Panel):
                 row = panel.row()
 
                 row.operator(
-                    "mesh.ffmpeg_renders",
-                    text="Create video from frames",
+                    "rmi.ffmpeg_encode",
+                    text="FFmpeg Encode",
                     icon="SEQUENCE")
 
         # Open render foldore button
         layout.operator(
-            "mesh.open_render_folder",
+            "rmi.open_render_folder",
             text="Open render folder",
             icon="FILE_FOLDER")
 
