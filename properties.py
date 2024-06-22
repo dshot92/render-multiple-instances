@@ -16,13 +16,13 @@ class Render_Script_Props(bpy.types.PropertyGroup):
     start_frame: bpy.props.IntProperty(
         name="Start Frame",
         description="Start Frame",
-        default=1,
+        default=0,
     )
 
     end_frame: bpy.props.IntProperty(
         name="End Frame",
         description="End Frame",
-        default=250,
+        default=0,
     )
 
     instances: bpy.props.IntProperty(
@@ -43,6 +43,14 @@ class Render_Script_Props(bpy.types.PropertyGroup):
         name="Auto Render",
         description="Auto Render",
         default=True
+    )
+
+    res_percentage: bpy.props.IntProperty(
+        name="Resolution Percentage",
+        description="Render Resolution Percentage",
+        default=50,
+        soft_min=1,
+        soft_max=100
     )
 
     quality: bpy.props.IntProperty(

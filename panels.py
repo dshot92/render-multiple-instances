@@ -24,14 +24,14 @@ class RENDER_PT_RenderScriptInstances_4_2(bpy.types.Panel):
 
         # Frame Range Override panel
         header, panel = layout.panel("panel_frames", default_closed=True)
-        header.label(text="Frame Range")
+        header.label(text="Overrides")
 
         if panel:
-
-            panel.prop(props, "override_range", text="Override Frame Range")
-            panel.active = props.override_range
+            # panel.prop(props, "override_range", text="Overrides")
+            # panel.active = props.override_range
             panel.prop(props, "start_frame")
             panel.prop(props, "end_frame")
+            panel.prop(props, "res_percentage", text="Res %")
 
         # Render Instances panel
         header, panel = layout.panel("panel_render", default_closed=False)
