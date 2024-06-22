@@ -11,7 +11,6 @@ import subprocess
 from pathlib import Path
 
 from .utils import (
-    OperatingSystem,
     get_blender_bin_path,
     get_export_dir,
     get_blend_file,
@@ -45,22 +44,21 @@ class RENDER_OT_Flipbook_Render(bpy.types.Operator):
             end_frame = props.end_frame
 
         cmd = []
+        cmd = [f'{blender_bin_path}', "-b", f'{blend_file_path}',
+               "-s", f"{start_frame}", "-e", f"{end_frame}", "-a"]
 
-        match OperatingSystem.detect_os():
-            case OperatingSystem.WINDOWS:
-                cmd = [f'{blender_bin_path}', "-b",
-                       f'{blend_file_path}', "-s", f"{start_frame}", "-e",
-                       f"{end_frame}", "-a"]
-            case OperatingSystem.MACOS:
-                cmd = [f'{blender_bin_path}', "--args", "-b",
-                       f'{blend_file_path}', "-s", f"{start_frame}", "-e",
-                       f"{end_frame}", "-a"]
-            case OperatingSystem.LINUX:
-                cmd = [f'{blender_bin_path}', "-b",
-                       f'{blend_file_path}', "-s", f"{start_frame}", "-e",
-                       f"{end_frame}", "-a"]
-            case OperatingSystem.UNKNOWN:
-                self.report({'ERROR'}, "Unknown OS")
+        # match OperatingSystem.detect_os():
+        #     case OperatingSystem.WINDOWS:
+        #         cmd = [f'{blender_bin_path}', "-b", f'{blend_file_path}',
+        #                "-s", f"{start_frame}", "-e", f"{end_frame}", "-a"]
+        #     case OperatingSystem.MACOS:
+        #         cmd = [f'{blender_bin_path}', "-b", f'{blend_file_path}',
+        #                "-s", f"{start_frame}", "-e", f"{end_frame}", "-a"]
+        #     case OperatingSystem.LINUX:
+        #         cmd = [f'{blender_bin_path}', "-b", f'{blend_file_path}',
+        #                "-s", f"{start_frame}", "-e", f"{end_frame}", "-a"]
+        #     case OperatingSystem.UNKNOWN:
+        #         self.report({'ERROR'}, "Unknown OS")
 
         return get_platform_terminal_command_list(cmd)
 
@@ -122,10 +120,6 @@ class RENDER_OT_Flipbook_Render(bpy.types.Operator):
 
 
 class RENDER_OT_Flipbook_Viewport(bpy.types.Operator):
-    """
-    Create render script
-    """
-
     bl_idname = "rmi.flipbook_viewport"
     bl_label = "Flipbook Viewport"
     bl_description = "Flipbook Viewport"
@@ -172,10 +166,6 @@ class RENDER_OT_Flipbook_Viewport(bpy.types.Operator):
 
 
 class RENDER_OT_ffmpeg_encode(bpy.types.Operator):
-    """
-    Create render script
-    """
-
     bl_idname = "rmi.ffmpeg_encode"
     bl_label = "Encode rendered frames into video"
     bl_description = "Encode rendered frames into video"
@@ -276,21 +266,17 @@ class RENDER_OT_ffmpeg_encode(bpy.types.Operator):
         return {'FINISHED'}
 
 
-class UI_OT_open_render_folder(bpy.types.Operator):
-    """
-    Create render script
-    """
-
-    bl_idname = "rmi.open_render_folder"
-    bl_label = "Open render folder"
-    bl_description = "Open render folder"
+class UI_OT_open_render_dir(bpy.types.Operator):
+    bl_idname = "rmi.open_render_dir"
+    bl_label = "Open Render Directory"
+    bl_description = "Open Render Directory"
 
     def execute(self, context):
 
-        path = get_export_dir()
+        path = get_export_parent_dir()
 
         if not os.path.isdir(path):
-            self.report({'ERROR'}, "Render folder not found")
+            self.report({'ERROR'}, "Render Directory not found")
             return {'CANCELLED'}
 
         open_folder(path)
@@ -302,7 +288,7 @@ classes = (
     RENDER_OT_Flipbook_Render,
     RENDER_OT_Flipbook_Viewport,
     RENDER_OT_ffmpeg_encode,
-    UI_OT_open_render_folder,
+    UI_OT_open_render_dir,
 )
 
 register, unregister = bpy.utils.register_classes_factory(classes)
