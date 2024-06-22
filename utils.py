@@ -35,7 +35,7 @@ class OperatingSystem(Enum):
 enc = ["libx264", "libx265", "libaom-av1"]
 
 
-def open_folder(path):
+def open_folder(path) -> None:
 
     match OperatingSystem.detect_os():
         case OperatingSystem.WINDOWS:
@@ -71,6 +71,7 @@ def get_encoders() -> list:
 def get_blender_bin_path() -> Path:
     blender_bin_path = Path(bpy.app.binary_path)
     return blender_bin_path
+
 
 def get_blend_file() -> Path:
     blend_file = Path(bpy.data.filepath)
@@ -109,26 +110,3 @@ def get_platform_terminal_command_list(command_list: list) -> list:
             raise RuntimeError("Unsupported platform")
 
     return cmd
-
-
-def get_frame_list(render_folder, duration):
-
-    frame_list_file = os.path.join(render_folder, "ffmpeg_input.txt")
-
-    # Use list comprehension to get both .png and .jpg files
-    files = [file for ext in ['*.png', '*.jpg']
-             for file in glob.glob(os.path.join(render_folder, ext))]
-
-    files.sort()
-
-    try:
-        with open(frame_list_file, "w+") as outfile:
-            for file in files:
-                outfile.write(f"file '{file}'\n")
-                outfile.write(f"duration {duration}\n")
-        outfile.close()
-    except FileNotFoundError as e:
-        print('Error ', e)
-        print(f"The {frame_list_file} does not exist")
-
-    return frame_list_file

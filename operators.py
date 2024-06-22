@@ -8,6 +8,7 @@ import os
 import bpy
 import glob
 import subprocess
+from pathlib import Path
 
 from .utils import (
     OperatingSystem,
@@ -150,13 +151,13 @@ class MESH_OT_ffmpeg_renders(bpy.types.Operator):
 
         return mp4_path
 
-    def get_frame_list_path(self):
+    def get_frame_list_path(self) -> Path:
 
         duration = 1 / bpy.context.scene.render.fps
 
         export_dir = get_export_dir()
-        # export_path = utils.get_export_path()
-        frame_list_file = os.path.join(export_dir, "ffmpeg_input.txt")
+
+        frame_list_file = Path(export_dir, "ffmpeg_input.txt")
 
         # Use list comprehension to get both .png and .jpg files
         files = [file for ext in ['*.png', '*.jpg']
@@ -176,7 +177,7 @@ class MESH_OT_ffmpeg_renders(bpy.types.Operator):
 
         return frame_list_file
 
-    def get_ffmpeg_command_list(self):
+    def get_ffmpeg_command_list(self) -> list:
 
         # https://stackoverflow.com/questions/31201164/ffmpeg-error-pattern-type-glob-was-selected-but-globbing-is-not-support-ed-by
         props = bpy.context.scene.Render_Script_Props
