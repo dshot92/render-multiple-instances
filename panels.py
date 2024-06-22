@@ -27,17 +27,9 @@ class RENDER_PT_RenderScriptInstances_4_2(bpy.types.Panel):
         header.label(text="Settings")
 
         if panel:
-            # panel.prop(props, "override_range", text="Overrides")
-            # panel.active = props.override_range
             panel.prop(props, "start_frame", text="Frame Start")
             panel.prop(props, "end_frame", text="Frame End")
             panel.prop(props, "res_percentage", text="Res %")
-
-        # Render Instances panel
-        # header, panel = layout.panel("panel_render", default_closed=False)
-        # header.label(text="Render Instances")
-
-        # if panel:
             panel.prop(props, "instances", text="Num Instances")
             row = panel.row()
             row.operator(

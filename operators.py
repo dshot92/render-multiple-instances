@@ -88,14 +88,16 @@ class RENDER_OT_Flipbook_Render(bpy.types.Operator):
         try:
             if not bpy.data.is_saved:
                 self.report(
-                    {'WARNING'}, "Blend file has never been saved before. Please save the file first.")
+                    {'WARNING'},
+                    "Blend file has never been saved before."
+                    + " Please save the file first.")
                 return {'CANCELLED'}
             bpy.ops.wm.save_mainfile()
         except RuntimeError as e:
             self.report({'ERROR'}, f"Failed to save blend file: {e}")
             return {'CANCELLED'}
 
-        auto_render = props.auto_render
+        # auto_render = props.auto_render
         instances = props.instances
 
         cmd = self.get_render_command_list(context)
@@ -149,14 +151,15 @@ class RENDER_OT_Flipbook_Viewport(bpy.types.Operator):
         try:
             if not bpy.data.is_saved:
                 self.report(
-                    {'WARNING'}, "Blend file has never been saved before. Please save the file first.")
+                    {'WARNING'},
+                    "Blend file has never been saved before."
+                    + " Please save the file first.")
                 return {'CANCELLED'}
             bpy.ops.wm.save_mainfile()
         except RuntimeError as e:
             self.report({'ERROR'}, f"Failed to save blend file: {e}")
             return {'CANCELLED'}
 
-        # bpy.ops.render.opengl(animation=False, render_keyed_only=False, sequencer=False, write_still=False, view_context=True)
         bpy.ops.render.opengl(animation=True)
 
         # Restore scene render settings

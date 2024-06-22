@@ -5,7 +5,7 @@
 # ----------------------------------------------------------
 
 from . import (
-    preferences,
+    # preferences,
     properties,
     operators,
     panels
@@ -49,7 +49,7 @@ def cleanse_modules():
 
 
 def register():
-    preferences.register()
+    # preferences.register()
     properties.register()
     operators.register()
     panels.register()
@@ -59,6 +59,6 @@ def unregister():
     panels.unregister()
     operators.unregister()
     properties.unregister()
-    preferences.unregister()
+    # preferences.unregister()
 
     cleanse_modules()

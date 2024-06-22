@@ -39,12 +39,6 @@ class Render_Script_Props(bpy.types.PropertyGroup):
         default=False
     )
 
-    auto_render: bpy.props.BoolProperty(
-        name="Auto Render",
-        description="Auto Render",
-        default=True
-    )
-
     res_percentage: bpy.props.IntProperty(
         name="Resolution Percentage",
         description="Render Resolution Percentage",
