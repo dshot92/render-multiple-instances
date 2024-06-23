@@ -42,7 +42,7 @@ class Render_Script_Props(bpy.types.PropertyGroup):
     res_percentage: bpy.props.IntProperty(
         name="Resolution Percentage",
         description="Render Resolution Percentage",
-        default=100,
+        default=50,
         soft_min=1,
         soft_max=100
     )
