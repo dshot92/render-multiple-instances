@@ -12,7 +12,7 @@ from pathlib import Path
 from enum import Enum
 
 
-class OperatingSystem(Enum):
+class OS(Enum):
     WINDOWS = "Windows"
     MACOS = "MacOS"
     LINUX = "Linux"
@@ -21,13 +21,13 @@ class OperatingSystem(Enum):
     @staticmethod
     def detect_os():
         if os.name == 'nt':
-            return OperatingSystem.WINDOWS
+            return OS.WINDOWS
         elif os.name == 'posix' and platform.system() == "Darwin":
-            return OperatingSystem.MACOS
+            return OS.MACOS
         elif os.name == 'posix' and platform.system() == "Linux":
-            return OperatingSystem.LINUX
+            return OS.LINUX
         else:
-            return OperatingSystem.UNKNOWN
+            return OS.UNKNOWN
 
 
 # List of wanter encoders
@@ -36,12 +36,12 @@ enc = ["libx264", "libx265", "libaom-av1"]
 
 def open_folder(path) -> None:
 
-    match OperatingSystem.detect_os():
-        case OperatingSystem.WINDOWS:
+    match OS.detect_os():
+        case OS.WINDOWS:
             os.startfile(path)
-        case OperatingSystem.MACOS:
+        case OS.MACOS:
             subprocess.Popen(["open", path])
-        case OperatingSystem.LINUX:
+        case OS.LINUX:
             subprocess.Popen(["xdg-open", path])
 
 
@@ -88,24 +88,33 @@ def get_export_parent_dir() -> Path:
 
 
 def get_platform_terminal_command_list(command_list: list) -> list:
+    """ 
+    - Windows: cmd.exe /c start
+    - MacOS: open -a Terminal.app --args
+    - Linux: x-terminal-emulator -e
+
+    On Linux you can choose your default terminal with
+    sudo update-alternatives --config x-terminal-emulator
+    """
     cmd = []
-    match OperatingSystem.detect_os():
-        case OperatingSystem.WINDOWS:
+    match OS.detect_os():
+        case OS.WINDOWS:
             # cmd = ["start", '""'] + command_list
             cmd = ["cmd.exe", "/c", "start"] + command_list
-        case OperatingSystem.MACOS:
+        case OS.MACOS:
             cmd = ["open", "-a", "Terminal.app", "--args"] + command_list
-        case OperatingSystem.LINUX:
-            match os.environ.get('XDG_CURRENT_DESKTOP', ''):
-                case 'GNOME':
-                    cmd = ["gnome-terminal", "--"] + command_list
-                case 'KDE':
-                    cmd = ["konsole", "--hold", "-e"] + command_list
-                case 'XFCE':
-                    cmd = ["xfce4-terminal", "--command"] + command_list
-                case _:
-                    cmd = ["x-terminal-emulator", "-e"] + command_list
-        case OperatingSystem.UNKNOWN:
+        case OS.LINUX:
+            cmd = ["x-terminal-emulator", "-e"] + command_list
+            # match os.environ.get('XDG_CURRENT_DESKTOP', ''):
+            # case 'GNOME':
+            #     cmd = ["gnome-terminal", "--"] + command_list
+            # case 'KDE':
+            #     cmd = ["konsole", "--hold", "-e"] + command_list
+            # case 'XFCE':
+            #     cmd = ["xfce4-terminal", "--command"] + command_list
+            # case _:
+            #     cmd = ["x-terminal-emulator", "-e"] + command_list
+        case OS.UNKNOWN:
             raise RuntimeError("Unsupported platform")
 
     return cmd
