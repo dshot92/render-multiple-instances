@@ -6,10 +6,13 @@
 
 import bpy
 import os
+import re
 import platform
 import subprocess
 from pathlib import Path
 from enum import Enum
+
+last_path = None
 
 
 class OS(Enum):
@@ -77,6 +80,44 @@ def get_blend_file() -> Path:
     return blend_file
 
 
+def set_render_path(path_type):
+    """
+    Set the render path based on the given path type, and automatically increment if the number already exists.
+
+    :param path_type: 'render' or 'viewport'
+    :return: The formatted render path
+    """
+    global last_path
+
+    base_path = "//flipbook/"
+
+    if path_type not in ['render', 'viewport']:
+        raise ValueError("Invalid path_type. Choose 'render' or 'viewport'.")
+
+    pattern = re.compile(rf"{path_type}_(\d{{3}})")
+    max_number = -1
+
+    # Find the maximum existing number for the given path_type
+    base_path_abs = bpy.path.abspath(base_path)
+    if os.path.exists(base_path_abs):
+        for entry in os.listdir(base_path_abs):
+            match = pattern.search(entry)
+            if match:
+                number = int(match.group(1))
+                if number > max_number:
+                    max_number = number
+
+    # Start with the next number after the maximum found
+    new_number = max_number + 1
+    new_path = os.path.join(base_path, f"{path_type}_{new_number:03d}/")
+
+    last_path = new_path
+    print(f"Render path: {new_path}")
+    print(f"Render number: {new_number}")
+
+    return new_path
+
+
 def get_export_dir() -> Path:
     filepath = bpy.path.abspath(bpy.context.scene.render.filepath)
     return Path(filepath).resolve()
@@ -88,7 +129,7 @@ def get_export_parent_dir() -> Path:
 
 
 def get_platform_terminal_command_list(command_list: list) -> list:
-    """ 
+    """
     - Windows: cmd.exe /c start
     - MacOS: open -a Terminal.app --args
     - Linux: x-terminal-emulator -e
