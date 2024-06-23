@@ -56,29 +56,33 @@ class RENDER_PT_RenderScriptInstances_4_2(bpy.types.Panel):
                 icon="RENDER_ANIMATION",
             )
 
+        # Open render foldore button
+        layout.operator(
+            "rmi.open_render_dir",
+            text="Open Directory",
+            icon="FILE_FOLDER")
         # Frame Range Override panel
         header, panel = layout.panel("panel_frames", default_closed=True)
         header.label(text="Settings")
 
         if panel:
-            panel.prop(props, "start_frame", text="Frame Start")
-            panel.prop(props, "end_frame", text="Frame End")
-            panel.prop(props, "res_percentage", text="Res %")
-            panel.prop(props, "instances", text="Num Instances")
+            panel.prop(props, "override_range", text="Flipbook Range")
+            row = panel.row()
+            row.active = props.override_range
+            row.prop(props, "start_frame", text="Flip Start")
+            row = panel.row()
+            row.active = props.override_range
+            row.prop(props, "end_frame", text="Flip End")
+            panel.prop(props, "res_percentage", text="Resolution %")
+            panel.prop(props, "instances", text="Instances")
 
             if not is_ffmpeg_installed():
                 panel.label(text="FFmpeg is NOT installed")
                 panel.label(text="Check Addon README.md for more info.")
             else:
-                panel.prop(props, "quality", text="Quality")
                 panel.prop(props, "encoder", text="Encoder")
+                panel.prop(props, "quality", text="Quality")
                 # panel.prop(props, "mp4_file", text="Mp4 save path")
-
-        # Open render foldore button
-        layout.operator(
-            "rmi.open_render_dir",
-            text="Open Render Directory",
-            icon="FILE_FOLDER")
 
 
 classes = (

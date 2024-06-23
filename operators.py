@@ -12,10 +12,8 @@ from pathlib import Path
 
 from .utils import (
     get_render_command_list,
-    get_blender_bin_path,
     set_render_path,
     get_export_dir,
-    get_blend_file,
     get_export_parent_dir,
     get_platform_terminal_command_list,
     open_folder,
@@ -77,6 +75,8 @@ class RENDER_OT_Flipbook_Viewport(bpy.types.Operator):
             _resolution_percentage = context.scene.render.resolution_percentage
             _export_dir = context.scene.render.filepath
             _file_ext = context.scene.render.image_settings.file_format
+            _start_frame = bpy.context.scene.frame_start
+            _end_frame = bpy.context.scene.frame_end
 
             context.scene.render.use_stamp = True
             context.scene.render.use_overwrite = False
@@ -84,6 +84,12 @@ class RENDER_OT_Flipbook_Viewport(bpy.types.Operator):
             context.scene.render.resolution_percentage = props.res_percentage
             context.scene.render.filepath = set_render_path('viewport')
             context.scene.render.image_settings.file_format = 'JPEG'
+            context.scene.render.image_settings.file_format = 'JPEG'
+            if props.override_range:
+                start_frame = props.start_frame
+                end_frame = props.end_frame
+                bpy.context.scene.frame_start = start_frame
+                bpy.context.scene.frame_end = end_frame
 
             # Save file to ensure last changes are saved
             try:
@@ -114,6 +120,9 @@ class RENDER_OT_Flipbook_Viewport(bpy.types.Operator):
             context.scene.render.resolution_percentage = _resolution_percentage
             context.scene.render.filepath = _export_dir
             context.scene.render.image_settings.file_format = _file_ext
+            if props.override_range:
+                bpy.context.scene.frame_start = _start_frame
+                bpy.context.scene.frame_end = _end_frame
 
         self.report({'INFO'}, "Flipbook Viewport Created")
         return {'FINISHED'}
@@ -135,12 +144,19 @@ class RENDER_OT_Flipbook_Render(bpy.types.Operator):
             _resolution_percentage = context.scene.render.resolution_percentage
             _export_dir = context.scene.render.filepath
             _file_ext = context.scene.render.image_settings.file_format
+            _start_frame = bpy.context.scene.frame_start
+            _end_frame = bpy.context.scene.frame_end
 
             context.scene.render.use_overwrite = False
             context.scene.render.use_placeholder = True
             context.scene.render.resolution_percentage = props.res_percentage
             context.scene.render.filepath = set_render_path('render')
             context.scene.render.image_settings.file_format = 'JPEG'
+            if props.override_range:
+                start_frame = props.start_frame
+                end_frame = props.end_frame
+                bpy.context.scene.frame_start = start_frame
+                bpy.context.scene.frame_end = end_frame
 
             # Save file to ensure last changes are saved
             try:
@@ -185,6 +201,9 @@ class RENDER_OT_Flipbook_Render(bpy.types.Operator):
             context.scene.render.resolution_percentage = _resolution_percentage
             context.scene.render.filepath = _export_dir
             context.scene.render.image_settings.file_format = _file_ext
+            if props.override_range:
+                bpy.context.scene.frame_start = _start_frame
+                bpy.context.scene.frame_end = _end_frame
 
         self.report({'INFO'}, "Flipbook Render Created")
         return {'FINISHED'}
