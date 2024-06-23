@@ -46,7 +46,7 @@ class RENDER_OT_Render(bpy.types.Operator):
             self.report({'ERROR'}, f"Failed to save blend file: {e}")
             return {'CANCELLED'}
 
-        instances = bpy.context.scene.Render_Script_Props.instances
+        instances = bpy.context.scene.RMI_Props.instances
 
         cmd = get_render_command_list(context)
 
@@ -65,7 +65,7 @@ class RENDER_OT_Flipbook_Viewport(bpy.types.Operator):
     def execute(self, context):
 
         try:
-            props = bpy.context.scene.Render_Script_Props
+            props = bpy.context.scene.RMI_Props
 
             # Store scene render settings
             _use_stamp = context.scene.render.use_stamp
@@ -135,7 +135,7 @@ class RENDER_OT_Flipbook_Render(bpy.types.Operator):
     def execute(self, context):
 
         try:
-            props = bpy.context.scene.Render_Script_Props
+            props = bpy.context.scene.RMI_Props
 
             # Store scene render settings
             _use_overwrite = context.scene.render.use_overwrite

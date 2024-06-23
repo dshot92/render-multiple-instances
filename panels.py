@@ -9,7 +9,7 @@ import bpy
 from .utils import is_ffmpeg_installed
 
 
-class RENDER_PT_RenderScriptInstances_4_2(bpy.types.Panel):
+class RENDER_PT_RenderScriptInstances(bpy.types.Panel):
 
     bl_space_type = "PROPERTIES"
     bl_region_type = "WINDOW"
@@ -18,7 +18,7 @@ class RENDER_PT_RenderScriptInstances_4_2(bpy.types.Panel):
     bl_category = "Render Multiple Instances"
 
     def draw(self, context):
-        props = context.scene.Render_Script_Props
+        props = context.scene.RMI_Props
         layout = self.layout
         layout.use_property_split = True
 
@@ -83,11 +83,10 @@ class RENDER_PT_RenderScriptInstances_4_2(bpy.types.Panel):
             else:
                 panel.prop(props, "encoder", text="Encoder")
                 panel.prop(props, "quality", text="Quality")
-                # panel.prop(props, "mp4_file", text="Mp4 save path")
 
 
 classes = (
-    RENDER_PT_RenderScriptInstances_4_2,
+    RENDER_PT_RenderScriptInstances,
 )
 
 

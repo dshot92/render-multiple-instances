@@ -10,7 +10,7 @@ import bpy
 from .utils import (get_encoders, is_ffmpeg_installed)
 
 
-class Render_Script_Props(bpy.types.PropertyGroup):
+class RMI_Props(bpy.types.PropertyGroup):
     # Render Script Property
 
     start_frame: bpy.props.IntProperty(
@@ -68,17 +68,16 @@ class Render_Script_Props(bpy.types.PropertyGroup):
     )
 
 
-classes = (Render_Script_Props,)
+classes = (RMI_Props,)
 
 
 def register():
     for bl_class in classes:
         bpy.utils.register_class(bl_class)
-    bpy.types.Scene.Render_Script_Props = bpy.props.PointerProperty(
-        type=Render_Script_Props)
+    bpy.types.Scene.RMI_Props = bpy.props.PointerProperty(type=RMI_Props)
 
 
 def unregister():
     for bl_class in reversed(classes):
         bpy.utils.unregister_class(bl_class)
-    del bpy.types.Scene.Render_Script_Props
+    del bpy.types.Scene.RMI_Props

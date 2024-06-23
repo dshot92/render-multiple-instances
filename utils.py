@@ -113,7 +113,7 @@ def set_render_path(path_type):
 
 def get_render_command_list(context: bpy.types.Context) -> list:
 
-    props = bpy.context.scene.Render_Script_Props
+    props = bpy.context.scene.RMI_Props
 
     blender_bin_path = get_blender_bin_path()
     blend_file_path = get_blend_file()
@@ -134,7 +134,7 @@ def get_render_command_list(context: bpy.types.Context) -> list:
 
 def get_mp4_output_path() -> Path:
 
-    props = bpy.context.scene.Render_Script_Props
+    props = bpy.context.scene.RMI_Props
 
     encoder = props.encoder
     quality = props.quality
@@ -207,7 +207,7 @@ def get_platform_terminal_command_list(command_list: list) -> list:
 def get_ffmpeg_command_list() -> list:
 
     # https://stackoverflow.com/questions/31201164/ffmpeg-error-pattern-type-glob-was-selected-but-globbing-is-not-support-ed-by
-    props = bpy.context.scene.Render_Script_Props
+    props = bpy.context.scene.RMI_Props
 
     encoder = props.encoder
     quality = props.quality
