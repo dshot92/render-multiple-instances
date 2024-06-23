@@ -121,6 +121,27 @@ def get_export_parent_dir() -> Path:
     return export_path.parent
 
 
+def get_render_command_list(context: bpy.types.Context) -> list:
+
+    props = bpy.context.scene.Render_Script_Props
+
+    blender_bin_path = get_blender_bin_path()
+    blend_file_path = get_blend_file()
+
+    start_frame = context.scene.frame_start
+    end_frame = context.scene.frame_end
+
+    # Override if start_frame > end_frame and are > 0
+    if props.start_frame > props.end_frame:
+        start_frame = props.start_frame
+        end_frame = props.end_frame
+
+    cmd = [f'{blender_bin_path}', "-b", f'{blend_file_path}',
+           "-s", f"{start_frame}", "-e", f"{end_frame}", "-a"]
+
+    return get_platform_terminal_command_list(cmd)
+
+
 def get_platform_terminal_command_list(command_list: list) -> list:
     """
     - Windows: cmd.exe /c start
