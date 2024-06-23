@@ -14,44 +14,44 @@ class RMI_Props(bpy.types.PropertyGroup):
     # Render Script Property
 
     start_frame: bpy.props.IntProperty(
-        name="Start Frame",
-        description="Start Frame",
+        name="start_frame",
+        # description="Start Frame",
         default=1,
         soft_min=1,
     )
 
     end_frame: bpy.props.IntProperty(
-        name="End Frame",
-        description="End Frame",
+        name="end_frame",
+        # description="End Frame",
         default=250,
         soft_min=1,
     )
 
     instances: bpy.props.IntProperty(
-        name="Instances",
-        description="Instances",
+        name="instances",
+        # description="instances",
         default=3,
         min=1,
         soft_max=64,
     )
 
     override_range: bpy.props.BoolProperty(
-        name="Override Frame Range",
-        description="Override Frame Range",
+        name="override_range",
+        # description="override Frame Range",
         default=False
     )
 
     res_percentage: bpy.props.IntProperty(
-        name="Resolution Percentage",
-        description="Render Resolution Percentage",
+        name="res_percentage",
+        # description="Render Resolution Percentage",
         default=50,
         soft_min=1,
         soft_max=100
     )
 
     quality: bpy.props.IntProperty(
-        name="Quality",
-        description="Highest = 1, Lowest = 50",
+        name="quality",
+        # description="Highest = 1, Lowest = 50",
         default=20,
         soft_min=1,
         soft_max=50
@@ -63,7 +63,7 @@ class RMI_Props(bpy.types.PropertyGroup):
 
     encoder: bpy.props.EnumProperty(
         name="encoder",
-        description="Select Encoder",
+        # description="Select Encoder",
         items=available_encoders,
     )
 

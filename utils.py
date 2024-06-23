@@ -80,7 +80,8 @@ def get_export_parent_dir() -> Path:
 
 def set_render_path(path_type):
     """
-    Set the render path based on the given path type, and automatically increment if the number already exists.
+    Set the render path based on the given path type,
+    and automatically increment if the number already exists.
 
     :param path_type: 'render' or 'viewport'
     :return: The formatted render path

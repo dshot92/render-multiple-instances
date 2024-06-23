@@ -231,7 +231,8 @@ class RENDER_OT_ffmpeg_encode(bpy.types.Operator):
 
         if not is_ffmpeg_installed():
             self.report(
-                {'ERROR'}, "FFmpeg is NOT installed. Check Addon README.md for more info.")
+                {'ERROR'},
+                "FFmpeg is NOT installed. Check README.md for more info.")
             return {'CANCELLED'}
 
         cmd = get_ffmpeg_command_list()
