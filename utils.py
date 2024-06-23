@@ -12,8 +12,6 @@ import subprocess
 from pathlib import Path
 from enum import Enum
 
-last_path = None
-
 
 class OS(Enum):
     WINDOWS = "Windows"
@@ -87,7 +85,6 @@ def set_render_path(path_type):
     :param path_type: 'render' or 'viewport'
     :return: The formatted render path
     """
-    global last_path
 
     base_path = "//flipbook/"
 
@@ -110,10 +107,6 @@ def set_render_path(path_type):
     # Start with the next number after the maximum found
     new_number = max_number + 1
     new_path = os.path.join(base_path, f"{path_type}_{new_number:03d}/")
-
-    last_path = new_path
-    print(f"Render path: {new_path}")
-    print(f"Render number: {new_number}")
 
     return new_path
 
