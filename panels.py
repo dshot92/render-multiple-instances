@@ -27,8 +27,8 @@ class RENDER_PT_RenderScriptInstances_4_2(bpy.types.Panel):
 
         if panel:
             panel.operator(
-                "rmi.render",
-                text="Render",
+                "rmi.render_animation",
+                text="Render Animation",
                 icon="RENDER_ANIMATION",
             )
             if not is_ffmpeg_installed():
@@ -38,7 +38,7 @@ class RENDER_PT_RenderScriptInstances_4_2(bpy.types.Panel):
                 panel.operator(
                     "rmi.ffmpeg_encode",
                     text="FFmpeg Encode Render",
-                    icon="SEQUENCE",
+                    icon="FILE_MOVIE",
                 )
 
         header, panel = layout.panel("panel_flipbook", default_closed=False)
@@ -61,6 +61,7 @@ class RENDER_PT_RenderScriptInstances_4_2(bpy.types.Panel):
             "rmi.open_render_dir",
             text="Open Directory",
             icon="FILE_FOLDER")
+
         # Frame Range Override panel
         header, panel = layout.panel("panel_frames", default_closed=True)
         header.label(text="Settings")
