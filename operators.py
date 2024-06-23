@@ -14,6 +14,7 @@ from .utils import (
     get_export_parent_dir,
     set_render_path,
     get_render_command_list,
+    is_ffmpeg_installed,
     get_ffmpeg_command_list,
     open_folder,
 )
@@ -177,6 +178,10 @@ class RENDER_OT_Flipbook_Render(bpy.types.Operator):
             cmd = get_render_command_list(context)
 
             # List to store all subprocess objects
+            # TODO: On windows, shell=True is necessary to show the terminal
+            # on linux it will not correctly work it it is on True
+            # This works okay, but could be better
+
             processes = []
             for _ in range(instances):
                 match OS.detect_os():
@@ -222,6 +227,11 @@ class RENDER_OT_ffmpeg_encode(bpy.types.Operator):
 
         if not os.path.isdir(get_export_dir()):
             self.report({'ERROR'}, "Render folder not found")
+            return {'CANCELLED'}
+
+        if not is_ffmpeg_installed():
+            self.report(
+                {'ERROR'}, "FFmpeg is NOT installed. Check Addon README.md for more info.")
             return {'CANCELLED'}
 
         cmd = get_ffmpeg_command_list()
