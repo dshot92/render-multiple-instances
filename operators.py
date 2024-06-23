@@ -9,11 +9,11 @@ import bpy
 import subprocess
 
 from .utils import (
+    OS,
     get_export_dir,
     get_export_parent_dir,
     set_render_path,
     get_render_command_list,
-    get_frame_list_path,
     get_ffmpeg_command_list,
     open_folder,
 )
@@ -178,9 +178,13 @@ class RENDER_OT_Flipbook_Render(bpy.types.Operator):
             # List to store all subprocess objects
             processes = []
             for _ in range(instances):
-                process = subprocess.Popen(
-                    cmd, stdout=subprocess.PIPE)
-                processes.append(process)
+                match OS.detect_os():
+                    case OS.WINDOWS:
+                        p = subprocess.Popen(
+                            cmd, shell=True, stdout=subprocess.PIPE)
+                    case OS.MACOS | OS.LINUX:
+                        p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+                processes.append(p)
 
             for p in processes:
                 p.communicate()
