@@ -6,24 +6,23 @@
 
 import os
 import bpy
-import glob
 import subprocess
-from pathlib import Path
 
 from .utils import (
-    get_render_command_list,
-    set_render_path,
     get_export_dir,
     get_export_parent_dir,
-    get_platform_terminal_command_list,
+    set_render_path,
+    get_render_command_list,
+    get_frame_list_path,
+    get_ffmpeg_command_list,
     open_folder,
 )
 
 
 class RENDER_OT_Render(bpy.types.Operator):
-    bl_idname = "rmi.render"
-    bl_label = "Render with Instances"
-    bl_description = "Render with Instances"
+    bl_idname = "rmi.render_animation"
+    bl_label = "Render Animation with Instances"
+    bl_description = "Render Animation with Instances"
 
     def execute(self, context):
 
@@ -214,98 +213,17 @@ class RENDER_OT_ffmpeg_encode(bpy.types.Operator):
     bl_label = "Encode rendered frames into video"
     bl_description = "Encode rendered frames into video"
 
-    def get_mp4_output_path(self) -> Path:
-
-        props = bpy.context.scene.Render_Script_Props
-
-        encoder = props.encoder
-        quality = props.quality
-
-        export_parent_dir = get_export_parent_dir()
-        export_dir = get_export_dir()
-
-        mp4_path = export_parent_dir / \
-            f"{export_dir.name}_{encoder}_{quality}.mp4"
-        return mp4_path
-
-    def get_frame_list_path(self) -> Path:
-
-        duration = 1 / bpy.context.scene.render.fps
-
-        export_dir = get_export_dir()
-
-        frame_list_file = Path(export_dir, "ffmpeg_frame_list.txt")
-
-        files = [file for ext in ['*.png', '*.jpg', '*.jpeg']
-                 for file in glob.glob(os.path.join(export_dir, ext))]
-
-        files.sort()
-
-        try:
-            with open(frame_list_file, "w") as frame_list:
-                for file in files:
-                    frame_list.write(f"file '{file}'\n")
-                    frame_list.write(f"duration {duration}\n")
-        except FileNotFoundError:
-            self.report({'ERROR'}, "Could not create frame list file")
-            return {'CANCELLED'}
-
-        return frame_list_file
-
-    def get_ffmpeg_command_list(self) -> list:
-
-        # https://stackoverflow.com/questions/31201164/ffmpeg-error-pattern-type-glob-was-selected-but-globbing-is-not-support-ed-by
-        props = bpy.context.scene.Render_Script_Props
-
-        encoder = props.encoder
-        quality = props.quality
-        fps = bpy.context.scene.render.fps
-
-        frame_list_file = self.get_frame_list_path()
-        output_file = self.get_mp4_output_path()
-
-        cmd = []
-        # https://ntown.at/de/knowledgebase/cuda-gpu-accelerated-h264-h265-hevc-video-encoding-with-ffmpeg/
-        match encoder:
-            case "libx264":
-                # ffmpeg_command = f'ffmpeg -safe 0 -r {fps} -f concat
-                # -i "{frame_list_file}" -pix_fmt yuv420p -c:v {encoder}
-                # -crf {quality} -tune fastdecode "{output_file}" -y'
-                cmd = ["ffmpeg", "-safe", "0", "-r", f"{fps}", "-f",
-                       "concat", "-i", f'"{frame_list_file}"',
-                       "-pix_fmt", "yuv420p", "-c:v",
-                       f"{encoder}", "-crf", f"{quality}",
-                       f'"{output_file}"', "-y"]
-            case "libx265":
-                # ffmpeg -i input.mov -pix_fmt yuv420p -c:v libx265
-                # -crf 18 -tune fastdecode -g 1 output.mp4
-                cmd = ["ffmpeg", "-safe", "0", "-r", f"{fps}", "-f",
-                       "concat", "-i", f'"{frame_list_file}"', "-pix_fmt",
-                       "yuv420p", "-c:v", f"{encoder}", "-crf",
-                       f"{quality}", "-tune", "fastdecode", "-g", "1",
-                       f'"{output_file}"', "-y"]
-            case "libaom-av1":
-                # ffmpeg -i input.mov -pix_fmt yuv420p -c:v libx265 -crf 18
-                # -tune fastdecode -g 1 output.mp4
-                cmd = ["ffmpeg", "-strict", "-2", "-safe", "0", "-r",
-                       f"{fps}", "-f", "concat", "-i",
-                       f'"{frame_list_file}"', "-c:v", f"{encoder}",
-                       "-strict", "-2", "-crf", f"{quality}",
-                       f'"{output_file}"', "-y"]
-
-        return get_platform_terminal_command_list(cmd)
-
     def execute(self, context):
 
         if not os.path.isdir(get_export_dir()):
             self.report({'ERROR'}, "Render folder not found")
             return {'CANCELLED'}
 
-        cmd = self.get_ffmpeg_command_list()
+        cmd = get_ffmpeg_command_list()
 
         os.system(' '.join(cmd))
 
-        os.remove(self.get_frame_list_path())
+        os.remove(get_frame_list_path())
 
         self.report({'INFO'}, "Video .mp4 encoded")
         return {'FINISHED'}
