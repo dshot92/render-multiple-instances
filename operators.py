@@ -223,7 +223,8 @@ class RENDER_OT_ffmpeg_encode(bpy.types.Operator):
 
         os.system(' '.join(cmd))
 
-        os.remove(get_frame_list_path())
+        # TODO: this does not work on windows
+        # os.remove(get_frame_list_path())
 
         self.report({'INFO'}, "Video .mp4 encoded")
         return {'FINISHED'}
