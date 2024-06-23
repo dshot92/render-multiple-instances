@@ -42,7 +42,7 @@ class RENDER_PT_RenderScriptInstances_4_2(bpy.types.Panel):
                 )
 
         header, panel = layout.panel("panel_flipbook", default_closed=False)
-        header.label(text="Flibook")
+        header.label(text="Flipbook")
 
         if panel:
             panel.operator(
