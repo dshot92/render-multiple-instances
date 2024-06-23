@@ -105,13 +105,14 @@ class RENDER_OT_Flipbook_Viewport(bpy.types.Operator):
 
             bpy.ops.render.opengl(animation=True)
 
-            bpy.ops.rmi.ffmpeg_encode()
-
         except RuntimeError as e:
             self.report({'ERROR'}, f"Failed to save blend file: {e}")
             return {'CANCELLED'}
 
         finally:
+            # Encode flipbook
+            bpy.ops.rmi.ffmpeg_encode()
+
             # Restore scene render settings
             context.scene.render.use_stamp = _use_stamp
             context.scene.render.use_overwrite = _use_overwrite
