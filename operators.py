@@ -30,35 +30,18 @@ class RENDER_OT_Flipbook_Render(bpy.types.Operator):
         props = bpy.context.scene.Render_Script_Props
 
         blender_bin_path = get_blender_bin_path()
-
         blend_file_path = get_blend_file()
 
         start_frame = context.scene.frame_start
         end_frame = context.scene.frame_end
-
-        # override_range = props.override_range
 
         # Override if start_frame > end_frame and are > 0
         if props.start_frame > props.end_frame:
             start_frame = props.start_frame
             end_frame = props.end_frame
 
-        cmd = []
         cmd = [f'{blender_bin_path}', "-b", f'{blend_file_path}',
                "-s", f"{start_frame}", "-e", f"{end_frame}", "-a"]
-
-        # match OperatingSystem.detect_os():
-        #     case OperatingSystem.WINDOWS:
-        #         cmd = [f'{blender_bin_path}', "-b", f'{blend_file_path}',
-        #                "-s", f"{start_frame}", "-e", f"{end_frame}", "-a"]
-        #     case OperatingSystem.MACOS:
-        #         cmd = [f'{blender_bin_path}', "-b", f'{blend_file_path}',
-        #                "-s", f"{start_frame}", "-e", f"{end_frame}", "-a"]
-        #     case OperatingSystem.LINUX:
-        #         cmd = [f'{blender_bin_path}', "-b", f'{blend_file_path}',
-        #                "-s", f"{start_frame}", "-e", f"{end_frame}", "-a"]
-        #     case OperatingSystem.UNKNOWN:
-        #         self.report({'ERROR'}, "Unknown OS")
 
         return get_platform_terminal_command_list(cmd)
 
@@ -99,7 +82,6 @@ class RENDER_OT_Flipbook_Render(bpy.types.Operator):
         instances = props.instances
 
         cmd = self.get_render_command_list(context)
-        print(cmd)
 
         for _ in range(instances):
             subprocess.Popen(cmd)
@@ -127,8 +109,6 @@ class RENDER_OT_Flipbook_Viewport(bpy.types.Operator):
     def execute(self, context):
 
         props = bpy.context.scene.Render_Script_Props
-
-        print("viewport")
 
         # Store scene render settings
         _use_stamp = context.scene.render.use_stamp
@@ -182,7 +162,6 @@ class RENDER_OT_ffmpeg_encode(bpy.types.Operator):
 
         mp4_path = export_parent_dir / \
             f"{export_dir.name}_{encoder}_{quality}.mp4"
-
         return mp4_path
 
     def get_frame_list_path(self) -> Path:
@@ -203,9 +182,9 @@ class RENDER_OT_ffmpeg_encode(bpy.types.Operator):
                 for file in files:
                     frame_list.write(f"file '{file}'\n")
                     frame_list.write(f"duration {duration}\n")
-        except FileNotFoundError as e:
-            print('Error ', e)
-            print(f"The {frame_list_file} does not exist")
+        except FileNotFoundError:
+            self.report({'ERROR'}, "Could not create frame list file")
+            return {'CANCELLED'}
 
         return frame_list_file
 
@@ -261,6 +240,8 @@ class RENDER_OT_ffmpeg_encode(bpy.types.Operator):
         cmd = self.get_ffmpeg_command_list()
 
         os.system(' '.join(cmd))
+
+        os.remove(self.get_frame_list_path())
 
         self.report({'INFO'}, "Video .mp4 encoded")
         return {'FINISHED'}
