@@ -6,8 +6,6 @@
 
 import bpy
 
-from .utils import is_ffmpeg_installed
-
 
 class RENDER_PT_RenderScriptInstances(bpy.types.Panel):
 
@@ -31,15 +29,11 @@ class RENDER_PT_RenderScriptInstances(bpy.types.Panel):
                 text="Render Animation",
                 icon="RENDER_ANIMATION",
             )
-            if not is_ffmpeg_installed():
-                panel.label(text="FFmpeg is NOT installed")
-                panel.label(text="Check Addon README.md for more info.")
-            else:
-                panel.operator(
-                    "rmi.ffmpeg_encode",
-                    text="FFmpeg Encode Render",
-                    icon="FILE_MOVIE",
-                )
+            panel.operator(
+                "rmi.ffmpeg_encode",
+                text="FFmpeg Encode Render",
+                icon="FILE_MOVIE",
+            )
 
         header, panel = layout.panel("panel_flipbook", default_closed=False)
         header.label(text="Flipbook")
@@ -77,12 +71,8 @@ class RENDER_PT_RenderScriptInstances(bpy.types.Panel):
             panel.prop(props, "res_percentage", text="Resolution %")
             panel.prop(props, "instances", text="Instances")
 
-            if not is_ffmpeg_installed():
-                panel.label(text="FFmpeg is NOT installed")
-                panel.label(text="Check Addon README.md for more info.")
-            else:
-                panel.prop(props, "encoder", text="Encoder")
-                panel.prop(props, "quality", text="Quality")
+            panel.prop(props, "encoder", text="Encoder")
+            panel.prop(props, "quality", text="Quality")
 
 
 classes = (
