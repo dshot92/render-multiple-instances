@@ -177,23 +177,23 @@ class RENDER_OT_Flipbook_Render(bpy.types.Operator):
 
             # List to store all subprocess objects
             processes = []
-
-            # launch subprocess instances
             for _ in range(instances):
-                process = subprocess.Popen(cmd)
+                process = subprocess.Popen(
+                    cmd, stdout=subprocess.PIPE)
                 processes.append(process)
 
-            # Wait for all subprocesses to complete
-            for process in processes:
-                process.wait()
-
-            bpy.ops.rmi.ffmpeg_encode()
+            for p in processes:
+                p.communicate()
+                p.wait()
 
         except RuntimeError as e:
             self.report({'ERROR'}, f"Failed to Encode flipbook: {e}")
             return {'CANCELLED'}
 
         finally:
+            # Encode flipbook
+            bpy.ops.rmi.ffmpeg_encode()
+
             # Restore scene render settings
             context.scene.render.use_overwrite = _use_overwrite
             context.scene.render.use_placeholder = _use_placeholder
