@@ -170,7 +170,7 @@ class RENDER_OT_ffmpeg_encode(bpy.types.Operator):
 
         export_dir = get_export_dir()
 
-        frame_list_file = Path(export_dir, "ffmpeg_input.txt")
+        frame_list_file = Path(export_dir, "ffmpeg_frame_list.txt")
 
         files = [file for ext in ['*.png', '*.jpg', '*.jpeg']
                  for file in glob.glob(os.path.join(export_dir, ext))]
