@@ -86,7 +86,7 @@ def set_render_path(path_type):
     :return: The formatted render path
     """
 
-    base_path = "//flipbook/"
+    base_path = "//flipbooks/"
 
     if path_type not in ['render', 'viewport']:
         raise ValueError("Invalid path_type. Choose 'render' or 'viewport'.")
