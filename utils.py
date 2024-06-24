@@ -112,7 +112,7 @@ def set_render_path(path_type):
     if path_type not in ['render', 'viewport']:
         raise ValueError("Invalid path_type. Choose 'render' or 'viewport'.")
 
-    pattern = re.compile(rf"{path_type}_(\d{{3}})")
+    pattern = re.compile(rf"{path_type}_v(\d{{3}})")
     max_number = -1
 
     # Find the maximum existing number for the given path_type
@@ -127,7 +127,7 @@ def set_render_path(path_type):
 
     # Start with the next number after the maximum found
     new_number = max_number + 1
-    new_path = os.path.join(base_path, f"{path_type}_{new_number:03d}/")
+    new_path = os.path.join(base_path, f"{path_type}_v{new_number:03d}/")
 
     return new_path
 
