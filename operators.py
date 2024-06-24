@@ -12,7 +12,7 @@ from .utils import (
     OS,
     ffmpeg_installed,
     get_export_dir,
-    get_export_parent_dir,
+    get_blend_file,
     set_render_path,
     get_render_command_list,
     get_ffmpeg_command_list,
@@ -248,7 +248,7 @@ class UI_OT_open_render_dir(bpy.types.Operator):
 
     def execute(self, context):
 
-        path = get_export_parent_dir()
+        path = get_blend_file().parent
 
         if not os.path.isdir(path):
             self.report({'ERROR'}, "Render Directory not found")
