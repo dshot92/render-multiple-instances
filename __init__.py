@@ -5,7 +5,6 @@
 # ----------------------------------------------------------
 
 from . import (
-    # preferences,
     properties,
     operators,
     panels
@@ -14,14 +13,14 @@ import sys
 
 # bl_info = {
 #     "name": "Render Multiple Instances",
-#     "version": (2, 6, 0),
+#     "version": (3, 0, 0),
 #     "author": "DShot92 <dshot92@gmail.com>",
-#     "blender": (2, 83, 20),
+#     "blender": (4, 2, 0),
 #     "category": "Render",
 #     "location": "Output Properties > Render Multiple Instances",
-#     "description": "Render animations faster with multiple instances.",
+#     "description": "Render animations and Flipbooks faster with multiple instances.",
 #     "warning": "",
-#     "doc_url": "https://github.com/dshot92/blender_addons",
+#     "doc_url": "https://github.com/dshot92/render-multiple-instances",
 #     "tracker_url": "",
 # }
 
@@ -29,7 +28,6 @@ if "bpy" in locals():
     import importlib
 
     reloadable_modules = [
-        "preferences",
         "properties",
         "operators"
         "panels"
@@ -49,7 +47,6 @@ def cleanse_modules():
 
 
 def register():
-    # preferences.register()
     properties.register()
     operators.register()
     panels.register()
@@ -59,6 +56,5 @@ def unregister():
     panels.unregister()
     operators.unregister()
     properties.unregister()
-    # preferences.unregister()
 
     cleanse_modules()
