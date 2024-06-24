@@ -12,6 +12,7 @@ import glob
 import subprocess
 from pathlib import Path
 from enum import Enum
+import shutil
 
 
 class OS(Enum):
@@ -33,13 +34,16 @@ class OS(Enum):
 
 
 def is_ffmpeg_installed() -> bool:
-    try:
-        cmd = ["ffprobe", "-version"]
-        _ = subprocess.check_output(cmd)
-        return True
-    except Exception as e:
-        print("ERROR ", e)
-        return False
+    # try:
+    #     cmd = ["ffprobe", "-version"]
+    #     _ = subprocess.check_output(cmd)
+    #     return True
+    # except Exception as e:
+    #     print("ERROR ", e)
+    #     return False
+    # print('test')
+    # print(shutil.which('ffmpeg'))
+    return shutil.which('ffmpeg') is not None
 
 
 def get_encoders() -> list:
