@@ -87,11 +87,6 @@ def get_export_dir() -> Path:
     return filepath
 
 
-def get_export_parent_dir() -> Path:
-    export_path = get_export_dir()
-    return export_path.parent
-
-
 def set_render_path(path_type):
     """
     Set the render path based on the given path type,
@@ -154,8 +149,8 @@ def get_mp4_output_path() -> Path:
     encoder = props.encoder
     quality = props.quality
 
-    export_parent_dir = get_export_parent_dir()
     export_dir = get_export_dir()
+    export_parent_dir = get_export_dir().parent
 
     mp4_path = export_parent_dir / \
         f"{export_dir.name}_{encoder}_{quality}.mp4"
@@ -204,15 +199,6 @@ def get_platform_terminal_command_list(command_list: list) -> list:
             cmd = ["open", "-a", "Terminal.app", "--args"] + command_list
         case OS.LINUX:
             cmd = ["x-terminal-emulator", "-e"] + command_list
-            # match os.environ.get('XDG_CURRENT_DESKTOP', ''):
-            # case 'GNOME':
-            #     cmd = ["gnome-terminal", "--"] + command_list
-            # case 'KDE':
-            #     cmd = ["konsole", "--hold", "-e"] + command_list
-            # case 'XFCE':
-            #     cmd = ["xfce4-terminal", "--command"] + command_list
-            # case _:
-            #     cmd = ["x-terminal-emulator", "-e"] + command_list
         case OS.UNKNOWN:
             raise RuntimeError("Unsupported platform")
 
