@@ -13,26 +13,19 @@ from .utils import (
     get_export_dir,
     get_blend_file,
     set_render_path,
+    start_process,
     get_render_command_list,
     get_ffmpeg_command_list,
     open_folder,
 )
 
 
-class RENDER_OT_Render(bpy.types.Operator):
-    bl_idname = "rmi.render_animation"
-    bl_label = "Render Animation with Instances"
-    bl_description = "Render Animation with Instances"
+class RENDER_OT_Save_blend_file(bpy.types.Operator):
+    bl_idname = "rmi.save_blend_file"
+    bl_label = "Save Blend File"
+    bl_description = "Save Blend File"
 
     def execute(self, context):
-
-        file_ext = str(context.scene.render.image_settings.file_format).lower()
-
-        if file_ext != "png" and file_ext != "jpg" and file_ext != "jpeg":
-            self.report({'ERROR'},
-                        "Export extension must be .png/.jpg")
-            return {'CANCELLED'}
-
         # Save file to ensure last changes are saved
         try:
             if not bpy.data.is_saved:
@@ -46,9 +39,27 @@ class RENDER_OT_Render(bpy.types.Operator):
             self.report({'ERROR'}, f"Failed to save blend file: {e}")
             return {'CANCELLED'}
 
+        return {'FINISHED'}
+
+
+class RENDER_OT_Render(bpy.types.Operator):
+    bl_idname = "rmi.render_animation"
+    bl_label = "Render Animation with Instances"
+    bl_description = "Render Animation with Instances"
+
+    def execute(self, context):
+        file_ext = str(context.scene.render.image_settings.file_format).lower()
+
+        if file_ext != "png" and file_ext != "jpg" and file_ext != "jpeg":
+            self.report({'ERROR'},
+                        "Export extension must be .png/.jpg")
+            return {'CANCELLED'}
+
         instances = bpy.context.scene.RMI_Props.instances
 
         cmd = get_render_command_list(context)
+
+        bpy.ops.rmi.save_blend_file()
 
         for _ in range(instances):
             subprocess.Popen(cmd)
@@ -90,18 +101,7 @@ class RENDER_OT_Flipbook_Viewport(bpy.types.Operator):
                 bpy.context.scene.frame_start = start_frame
                 bpy.context.scene.frame_end = end_frame
 
-            # Save file to ensure last changes are saved
-            try:
-                if not bpy.data.is_saved:
-                    self.report(
-                        {'WARNING'},
-                        "Blend file has never been saved before."
-                        + " Please save the file first.")
-                    return {'CANCELLED'}
-                bpy.ops.wm.save_mainfile()
-            except RuntimeError as e:
-                self.report({'ERROR'}, f"Failed to save blend file: {e}")
-                return {'CANCELLED'}
+            bpy.ops.rmi.save_blend_file()
 
             bpy.ops.render.opengl(animation=True)
 
@@ -123,6 +123,8 @@ class RENDER_OT_Flipbook_Viewport(bpy.types.Operator):
             if props.override_range:
                 bpy.context.scene.frame_start = _start_frame
                 bpy.context.scene.frame_end = _end_frame
+
+            bpy.ops.rmi.save_blend_file()
 
         self.report({'INFO'}, "Flipbook Viewport Created")
         return {'FINISHED'}
@@ -158,23 +160,12 @@ class RENDER_OT_Flipbook_Render(bpy.types.Operator):
                 bpy.context.scene.frame_start = start_frame
                 bpy.context.scene.frame_end = end_frame
 
-            # Save file to ensure last changes are saved
-            try:
-                if not bpy.data.is_saved:
-                    self.report(
-                        {'WARNING'},
-                        "Blend file has never been saved before."
-                        + " Please save the file first.")
-                    return {'CANCELLED'}
-                bpy.ops.wm.save_mainfile()
-            except RuntimeError as e:
-                self.report({'ERROR'}, f"Failed to save blend file: {e}")
-                return {'CANCELLED'}
-
             # auto_render = props.auto_render
             instances = props.instances
 
             cmd = get_render_command_list(context)
+
+            bpy.ops.rmi.save_blend_file()
 
             # List to store all subprocess objects
             # TODO: On windows, shell=True is necessary to show the terminal
@@ -207,6 +198,8 @@ class RENDER_OT_Flipbook_Render(bpy.types.Operator):
             if props.override_range:
                 bpy.context.scene.frame_start = _start_frame
                 bpy.context.scene.frame_end = _end_frame
+
+            bpy.ops.rmi.save_blend_file()
 
         self.report({'INFO'}, "Flipbook Render Created")
         return {'FINISHED'}
@@ -254,6 +247,7 @@ class UI_OT_open_render_dir(bpy.types.Operator):
 
 
 classes = (
+    RENDER_OT_Save_blend_file,
     RENDER_OT_Render,
     RENDER_OT_Flipbook_Viewport,
     RENDER_OT_Flipbook_Render,
