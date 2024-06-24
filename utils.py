@@ -221,6 +221,9 @@ def get_platform_terminal_command_list(command_list: list) -> list:
 
 
 def start_process(cmd) -> subprocess.Popen:
+    # TODO: On windows, shell=True is necessary to show the terminal
+    # on linux it will not correctly work it it is on True
+    # This works okay, but could be better
     p = None
     match OS.detect_os():
         case OS.WINDOWS:

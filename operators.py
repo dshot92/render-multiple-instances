@@ -168,11 +168,6 @@ class RENDER_OT_Flipbook_Render(bpy.types.Operator):
 
             bpy.ops.rmi.save_blend_file()
 
-            # List to store all subprocess objects
-            # TODO: On windows, shell=True is necessary to show the terminal
-            # on linux it will not correctly work it it is on True
-            # This works okay, but could be better
-
             processes = []
             for _ in range(instances):
                 p = start_process(cmd)
