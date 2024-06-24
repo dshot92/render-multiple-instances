@@ -77,14 +77,25 @@ def get_blend_file() -> Path:
 
 
 def get_export_dir() -> Path:
-    filepath = Path(bpy.path.abspath(bpy.context.scene.render.filepath))
+    """
+    Get always first directory from the filepath:
 
-    # Check if the path ends with a known image file
-    # extension or has frame placeholders
-    if filepath.suffix or '###' in filepath.stem:
-        filepath = filepath.parent
+    Example:
+    //export/v001/            -> //export/v001/
+    //export/v001/temp        -> //export/v001/
+    //export/v001/temp###     -> //export/v001/
+    //export/v001/temp###.png -> //export/v001/
+    """
+    filepath_str = bpy.path.abspath(bpy.context.scene.render.filepath)
+    filepath = Path(filepath_str)
 
-    return filepath
+    # Check if the path is a directory path or ends with a separator
+    if filepath.is_dir() or filepath_str.endswith('/'):
+        # Return as-is if it's a directory path or ends with a separator
+        return filepath
+
+    # Return the parent directory with a trailing slash
+    return filepath.parent / ''
 
 
 def set_render_path(path_type):
