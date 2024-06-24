@@ -111,7 +111,8 @@ class RENDER_OT_Flipbook_Viewport(bpy.types.Operator):
 
         finally:
             # Encode flipbook
-            bpy.ops.rmi.ffmpeg_encode()
+            if ffmpeg_installed:
+                bpy.ops.rmi.ffmpeg_encode()
 
             # Restore scene render settings
             context.scene.render.use_stamp = _use_stamp
@@ -187,7 +188,8 @@ class RENDER_OT_Flipbook_Render(bpy.types.Operator):
 
         finally:
             # Encode flipbook
-            bpy.ops.rmi.ffmpeg_encode()
+            if ffmpeg_installed:
+                bpy.ops.rmi.ffmpeg_encode()
 
             # Restore scene render settings
             context.scene.render.use_overwrite = _use_overwrite
