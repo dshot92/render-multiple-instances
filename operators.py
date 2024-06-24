@@ -9,14 +9,14 @@ import bpy
 import subprocess
 
 from .utils import (
-    ffmpeg_installed,
-    get_export_dir,
-    get_blend_file,
-    set_render_path,
+    open_folder,
     start_process,
+    get_blend_file,
+    get_export_dir,
+    set_render_path,
+    ffmpeg_installed,
     get_render_command_list,
     get_ffmpeg_command_list,
-    open_folder,
 )
 
 
