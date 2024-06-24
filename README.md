@@ -1,5 +1,18 @@
 # Render Script Addon
 
+## Description
+
+This addon allows you to render multiple instances in parallel.
+Rendering in background is always faster.
+This are some example results i usually get:
+blender ctrl+F12: 02:02s
+rmi 1 instance:   01:51s
+rmi 2 instance:   01:06s
+rmi 3 instance:   00:55s
+rmi 4 instance:   00:49s
+rmi 5 instance:   00:44s
+rmi 6 instance:   00:46s
+
 ## Installation
 
 1. In blender, go to: Edit -> Preferences -> Add-ons -> Install.
