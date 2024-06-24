@@ -10,11 +10,11 @@ import subprocess
 
 from .utils import (
     OS,
+    ffmpeg_installed,
     get_export_dir,
     get_export_parent_dir,
     set_render_path,
     get_render_command_list,
-    is_ffmpeg_installed,
     get_ffmpeg_command_list,
     open_folder,
 )
@@ -223,17 +223,12 @@ class RENDER_OT_ffmpeg_encode(bpy.types.Operator):
     bl_label = "Encode rendered frames into video"
     bl_description = "Encode rendered frames into video"
 
+    @classmethod
+    def poll(cls, context):
+        export_dir_exist = os.path.isdir(get_export_dir())
+        return ffmpeg_installed and export_dir_exist
+
     def execute(self, context):
-
-        if not os.path.isdir(get_export_dir()):
-            self.report({'ERROR'}, "Render folder not found")
-            return {'CANCELLED'}
-
-        if not is_ffmpeg_installed():
-            self.report(
-                {'ERROR'},
-                "FFmpeg is NOT installed. Check README.md for more info.")
-            return {'CANCELLED'}
 
         cmd = get_ffmpeg_command_list()
 

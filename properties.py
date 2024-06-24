@@ -7,7 +7,7 @@
 import bpy
 
 
-from .utils import (get_encoders, is_ffmpeg_installed)
+from .utils import (available_encoders)
 
 
 class RMI_Props(bpy.types.PropertyGroup):
@@ -56,10 +56,6 @@ class RMI_Props(bpy.types.PropertyGroup):
         soft_min=1,
         soft_max=50
     )
-
-    available_encoders = []
-    if is_ffmpeg_installed():
-        available_encoders = get_encoders()
 
     encoder: bpy.props.EnumProperty(
         name="encoder",

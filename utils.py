@@ -32,10 +32,6 @@ class OS(Enum):
             return OS.UNKNOWN
 
 
-# List of wanter encoders
-enc = ["libx264", "libx265", "libaom-av1"]
-
-
 def is_ffmpeg_installed() -> bool:
     try:
         cmd = ["ffprobe", "-version"]
@@ -50,12 +46,24 @@ def get_encoders() -> list:
     cmd = ["ffprobe", "-encoders"]
     encoders_list = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
 
+    # List of wanter encoders
+    enc = ["libx264", "libx265", "libaom-av1"]
+
     encoders = []
     for c in enc:
         if c in str(encoders_list):
             encoders.append(tuple((c, c, "")))
 
     return encoders
+
+
+# Use this int rmi.ffmpeg_encode and in panel.py
+ffmpeg_installed = is_ffmpeg_installed()
+
+# use this in panel.py
+available_encoders = []
+if ffmpeg_installed:
+    available_encoders = get_encoders()
 
 
 def get_blender_bin_path() -> Path:
@@ -69,8 +77,13 @@ def get_blend_file() -> Path:
 
 
 def get_export_dir() -> Path:
-    filepath = bpy.path.abspath(bpy.context.scene.render.filepath)
-    return Path(filepath).resolve()
+    filepath = Path(bpy.path.abspath(bpy.context.scene.render.filepath))
+
+    # Check if the path ends with a known image file extension or has frame placeholders
+    if filepath.suffix or '###' in filepath.stem:
+        filepath = filepath.parent
+
+    return filepath
 
 
 def get_export_parent_dir() -> Path:
