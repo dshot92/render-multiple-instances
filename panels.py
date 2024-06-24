@@ -60,6 +60,7 @@ class RENDER_PT_RenderScriptInstances(bpy.types.Panel):
         header, panel = layout.panel("panel_frames", default_closed=True)
         header.label(text="Settings")
 
+        # TODO: remove possibility to key these settings
         if panel:
             panel.prop(props, "override_range", text="Flipbook Range")
             row = panel.row()

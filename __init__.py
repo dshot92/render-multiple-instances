@@ -18,7 +18,7 @@ import sys
 #     "blender": (4, 2, 0),
 #     "category": "Render",
 #     "location": "Output Properties > Render Multiple Instances",
-#     "description": "Render animations and Flipbooks faster with multiple instances.",
+#     "description": "Render animations faster with multiple instances.",
 #     "warning": "",
 #     "doc_url": "https://github.com/dshot92/render-multiple-instances",
 #     "tracker_url": "",

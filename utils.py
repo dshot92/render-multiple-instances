@@ -79,7 +79,8 @@ def get_blend_file() -> Path:
 def get_export_dir() -> Path:
     filepath = Path(bpy.path.abspath(bpy.context.scene.render.filepath))
 
-    # Check if the path ends with a known image file extension or has frame placeholders
+    # Check if the path ends with a known image file
+    # extension or has frame placeholders
     if filepath.suffix or '###' in filepath.stem:
         filepath = filepath.parent
 
