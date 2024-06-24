@@ -216,6 +216,16 @@ def get_platform_terminal_command_list(command_list: list) -> list:
     return cmd
 
 
+def start_process(cmd) -> subprocess.Popen:
+    p = None
+    match OS.detect_os():
+        case OS.WINDOWS:
+            p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+        case OS.MACOS | OS.LINUX:
+            p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+    return p
+
+
 def get_ffmpeg_command_list() -> list:
 
     # https://stackoverflow.com/questions/31201164/ffmpeg-error-pattern-type-glob-was-selected-but-globbing-is-not-support-ed-by

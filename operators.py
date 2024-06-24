@@ -9,7 +9,6 @@ import bpy
 import subprocess
 
 from .utils import (
-    OS,
     ffmpeg_installed,
     get_export_dir,
     get_blend_file,
@@ -184,12 +183,7 @@ class RENDER_OT_Flipbook_Render(bpy.types.Operator):
 
             processes = []
             for _ in range(instances):
-                match OS.detect_os():
-                    case OS.WINDOWS:
-                        p = subprocess.Popen(
-                            cmd, shell=True, stdout=subprocess.PIPE)
-                    case OS.MACOS | OS.LINUX:
-                        p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+                p = start_process(cmd)
                 processes.append(p)
 
             for p in processes:
