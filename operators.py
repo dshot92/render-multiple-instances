@@ -7,11 +7,10 @@
 import os
 import bpy
 import subprocess
-import multiprocessing
 
 from .utils import (
     open_folder,
-    # start_process,
+    start_process,
     get_blend_file,
     get_export_dir,
     set_render_path,
@@ -43,11 +42,6 @@ class RENDER_OT_Save_blend_file(bpy.types.Operator):
         return {'FINISHED'}
 
 
-# Function to run a single rendering command
-def run_render_command(cmd):
-    subprocess.Popen(cmd).wait()
-
-
 class RENDER_OT_Render(bpy.types.Operator):
     bl_idname = "rmi.render_animation"
     bl_label = "Render Animation with Instances"
@@ -67,12 +61,8 @@ class RENDER_OT_Render(bpy.types.Operator):
 
         bpy.ops.rmi.save_blend_file()
 
-        # for _ in range(instances):
-        #     subprocess.Popen(cmd)
-
-        # Create a pool of workers to run the rendering commands in parallel
-        with multiprocessing.Pool(processes=instances) as pool:
-            pool.map(run_render_command, [cmd] * instances)
+        for _ in range(instances):
+            subprocess.Popen(cmd)
 
         self.report({'INFO'}, "Render Created")
         return {'FINISHED'}
@@ -178,18 +168,14 @@ class RENDER_OT_Flipbook_Render(bpy.types.Operator):
 
             bpy.ops.rmi.save_blend_file()
 
-            # processes = []
-            # for _ in range(instances):
-            #     p = start_process(cmd)
-            #     processes.append(p)
-            #
-            # for p in processes:
-            #     p.communicate()
-            #     p.wait()
+            processes = []
+            for _ in range(instances):
+                p = start_process(cmd)
+                processes.append(p)
 
-            # Create a pool of workers to run the rendering in parallel
-            with multiprocessing.Pool(processes=instances) as pool:
-                pool.map(run_render_command, [cmd] * instances)
+            for p in processes:
+                p.communicate()
+                p.wait()
 
         except RuntimeError as e:
             self.report({'ERROR'}, f"Failed to Encode flipbook: {e}")
