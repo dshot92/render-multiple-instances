@@ -48,13 +48,6 @@ class RENDER_OT_Render(bpy.types.Operator):
     bl_description = "Render Animation with Instances"
 
     def execute(self, context):
-        file_ext = str(context.scene.render.image_settings.file_format).lower()
-
-        if file_ext != "png" and file_ext != "jpg" and file_ext != "jpeg":
-            self.report({'ERROR'},
-                        "Export extension must be .png/.jpg")
-            return {'CANCELLED'}
-
         instances = bpy.context.scene.RMI_Props.instances
 
         cmd = get_render_command_list(context)
@@ -209,8 +202,12 @@ class RENDER_OT_ffmpeg_encode(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
+        file_ext = str(context.scene.render.image_settings.file_format).lower()
+        allowed_ext = file_ext in ('png', 'jpg', 'jpeg')
+
         export_dir_exist = os.path.isdir(get_export_dir())
-        return ffmpeg_installed and export_dir_exist
+
+        return ffmpeg_installed and export_dir_exist and allowed_ext
 
     def execute(self, context):
 
