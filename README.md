@@ -1,58 +1,38 @@
-# Render Script Addon
+# Render Multiple Instances (RMI) Addon for Blender
 
-## Description
+The Render Multiple Instances (RMI) addon for Blender provides a convenient way to render animations faster by utilizing multiple instances in background. Here are the key features of the addon:
 
-This addon allows you to render multiple instances in parallel.
-Rendering in background is always faster.
-This are some example results i usually get:
-blender ctrl+F12: 02:02s
-rmi 1 instance:   01:51s
-rmi 2 instance:   01:06s
-rmi 3 instance:   00:55s
-rmi 4 instance:   00:49s
-rmi 5 instance:   00:44s
-rmi 6 instance:   00:46s
+## Render Animation with Instances
+- Renders the animation using the specified number of instances, reducing rendering time
+- Uses the Blender scene's render output settings for the animation rendering
+- Encode exported frames to MP4 video using FFmpeg (if PNG of JPG output is selected)
 
-## Installation
+## Flipbook Viewport
+- Renders a flipbook animation in the viewport
+- Allows overriding the frame range and adjusting resolution percentage
+- Automatically encodes the rendered frames into an MP4 video using FFmpeg
+- Uses a custom incremental directory for the flipbook rendering based on the addon settings
 
-1. In blender, go to: Edit -> Preferences -> Add-ons -> Install.
-2. Select the downloaded file and click on -> Install Add-on.
-3. Enable it by clicking on checkbox.
-4. Once enabled is located in Output Properties -> Render Multiple Instances
+## Flipbook Render
+- Renders a flipbook animation using the specified number of instances
+- Supports overriding the frame range and adjusting resolution percentage
+- Automatically encodes the rendered frames into an MP4 video using FFmpeg
+- Uses a custom incremental directory for the flipbook rendering based on the addon settings
 
-## Usage
+## Open Render Directory
+- Provides a button to quickly open the render directory
 
-The addon works based on the blender render output folder.
+## Settings
+- Allows setting the number of instances to use for rendering
+- Provides options to select the encoder and adjust the quality
+- Includes settings for the flipbook rendering, such as frame range override and resolution percentage
 
-You can either use the relative or absolute paths scheme.
+The addon is designed to work seamlessly with Blender 4.2 and later versions. It simplifies the process of rendering animations by leveraging multiple instances, resulting in faster rendering times. The flipbook features enable quick previews of animations, while the FFmpeg encoding ensures the final output is ready to use.
 
-Example of relative output folder:
-`//export_folder/sequences/seq_001/`
+Even when using just a single instance, the RMI addon can improve rendering speed by rendering the animation in the background, allowing you to continue working in Blender while the rendering is in progress.
 
-or with a specific file name:
-`//export_folder/sequences/seq_001/frame_####`
-<br>
-<br>
+The Render Multiple Instances (RMI) panel is located in
+```Output Properties > Render Multiple Instances```
 
-### The panel is subdivided in 4 subpanels
-
--   Frame Range Override
-    -   Self Explaining
--   Render Instances
-    -   Select the number of instances that maximize the resources of your machine
-    -   Save and Render button will actually save the project to ensure all instances are getting the up to date file to render
--   Sequence to .mp4
-    -   Will only show up if FFmpeg is installed
-    -   Quality 1 is lossless, while 50 is low quality
-    -   You can choose to set .mp4 path or leave it black to get a file with the folder name, encoder and quality as name
--   Open render folder - Quick access to the rendered files
-
-<br>
-<br>
-<hr />
-
-## FFmpeg Install
-
-[Windows Install](https://github.com/dshot92/blender_addons/blob/4fac9db4c59f75dda544a32dee6b2986f6d725e5/Render_Script/readme.md#L27)
-
-[Linux Install](https://linuxize.com/post/how-to-install-ffmpeg-on-debian-9/)
+## Requirement for FFmpeg encoding
+Note that the FFmpeg encoding features of the addon require FFmpeg to be installed on the machine for them to function properly.
