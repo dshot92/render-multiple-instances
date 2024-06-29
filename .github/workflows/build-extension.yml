@@ -1,0 +1,64 @@
+name: Build Extension
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build_extension:
+    runs-on: ubuntu-latest
+
+    env:
+      REPO_NAME: ${{ github.event.repository.name }}
+      PYTHON_VERSION: '3.x'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install required Python packages
+        run: pip install requests toml-cli toml
+
+      - name: Get latest daily Blender build URL
+        run: python .github/workflows/get_latest_blender.py > blender_url.txt
+
+      - name: Download and extract Blender
+        run: |
+          wget -O /home/runner/blender.tar.xz $(cat blender_url.txt)
+          mkdir -p /home/runner/.local/bin /home/runner/blender
+          tar -xf /home/runner/blender.tar.xz -C /home/runner/blender --strip-components=1
+          ln -s /home/runner/blender/blender /home/runner/.local/bin/blender
+      
+      - name: remove blender_url.txt
+        run: rm blender_url.txt
+
+      - name: Extract version from blender_manifest.toml
+        id: extract_version
+        run: |
+          version=$(python -c "import toml; print(toml.load('./blender_manifest.toml')['version'])")
+          echo "Version: $version"
+          echo "version=$version" >> $GITHUB_ENV  # Store version in environment variable
+          echo "ZIP_FILE_PATH=/home/runner/${{ env.REPO_NAME }}-${version}.zip" >> $GITHUB_ENV  # Store zip file path in environment variable
+
+      - name: Build extension and capture zip filename
+        run: |
+          blender --command extension build --output-filepath=${{ env.ZIP_FILE_PATH }}
+
+      - name: Unzip the file
+        run: |
+          unzip ${{ env.ZIP_FILE_PATH }} -d /home/runner/${{ env.REPO_NAME }}-${{ env.version }}
+
+      - name: Archive artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.REPO_NAME }}-${{ env.version }}
+          path: /home/runner/${{ env.REPO_NAME }}-${{ env.version }}
