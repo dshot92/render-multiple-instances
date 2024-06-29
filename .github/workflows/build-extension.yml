@@ -26,7 +26,7 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Install required Python packages
-        run: pip install requests toml-cli toml
+        run: pip install requests toml-cli toml beautifulsoup4
 
       - name: Get latest daily Blender build URL
         run: python .github/workflows/get_latest_blender.py > blender_url.txt
