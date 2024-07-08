@@ -69,7 +69,7 @@ class RENDER_OT_Flipbook_Viewport(bpy.types.Operator):
     bl_idname = "rmi.flipbook_viewport"
     bl_label = "Flipbook Viewport"
     bl_description = "Flipbook Viewport"
-        
+
     @classmethod
     def poll(cls, context):
         return bpy.context.blend_data.is_saved
@@ -136,11 +136,11 @@ class RENDER_OT_Flipbook_Render(bpy.types.Operator):
     bl_idname = "rmi.flipbook_render"
     bl_label = "Flipbook Render"
     bl_description = "Flipbook Render"
-    
+
     @classmethod
     def poll(cls, context):
         return bpy.context.blend_data.is_saved
-        
+
     def execute(self, context):
 
         try:
@@ -239,7 +239,7 @@ class UI_OT_open_render_dir(bpy.types.Operator):
     bl_idname = "rmi.open_render_dir"
     bl_label = "Open Render Directory"
     bl_description = "Open Render Directory"
-    
+
     @classmethod
     def poll(cls, context):
         return bpy.context.blend_data.is_saved
