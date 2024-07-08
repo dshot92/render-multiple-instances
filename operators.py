@@ -49,7 +49,11 @@ class RENDER_OT_Render(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return bpy.context.blend_data.is_saved
+        saved = bpy.context.blend_data.is_saved
+        if not saved:
+            cls.poll_message_set(
+                "Blend file is not saved. Please save the file first.")
+        return saved
 
     def execute(self, context):
         instances = bpy.context.scene.RMI_Props.instances
@@ -72,7 +76,11 @@ class RENDER_OT_Flipbook_Viewport(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return bpy.context.blend_data.is_saved
+        saved = bpy.context.blend_data.is_saved
+        if not saved:
+            cls.poll_message_set(
+                "Blend file is not saved. Please save the file first.")
+        return saved
 
     def execute(self, context):
 
@@ -139,7 +147,11 @@ class RENDER_OT_Flipbook_Render(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return bpy.context.blend_data.is_saved
+        saved = bpy.context.blend_data.is_saved
+        if not saved:
+            cls.poll_message_set(
+                "Blend file is not saved. Please save the file first.")
+        return saved
 
     def execute(self, context):
 
@@ -214,13 +226,31 @@ class RENDER_OT_ffmpeg_encode(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
+        export_dir = get_export_dir()
+        if not export_dir.is_dir():
+            cls.poll_message_set(
+                f"Export Directory not found:\n{export_dir}")
+            return False
+
         file_ext = str(context.scene.render.image_settings.file_format).lower()
         allowed_ext = file_ext in ('png', 'jpg', 'jpeg')
+        if not allowed_ext:
+            cls.poll_message_set(
+                f"Unsupported file format: {file_ext}")
+            return False
 
-        export_dir_exist = os.path.isdir(get_export_dir())
+        if not ffmpeg_installed:
+            cls.poll_message_set(
+                "FFmpeg is not installed. Please install FFmpeg first.")
+            return False
+
         saved = bpy.context.blend_data.is_saved
+        if not saved:
+            cls.poll_message_set(
+                "Blend file is not saved. Please save the file first.")
+            return False
 
-        return saved and ffmpeg_installed and export_dir_exist and allowed_ext
+        return True
 
     def execute(self, context):
 
@@ -242,7 +272,11 @@ class UI_OT_open_render_dir(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return bpy.context.blend_data.is_saved
+        saved = bpy.context.blend_data.is_saved
+        if not saved:
+            cls.poll_message_set(
+                "Blend file is not saved. Please save the file first.")
+        return saved
 
     def execute(self, context):
 
