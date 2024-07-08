@@ -47,6 +47,10 @@ class RENDER_OT_Render(bpy.types.Operator):
     bl_label = "Render Animation with Instances"
     bl_description = "Render Animation with Instances"
 
+    @classmethod
+    def poll(cls, context):
+        return bpy.context.blend_data.is_saved
+
     def execute(self, context):
         instances = bpy.context.scene.RMI_Props.instances
 
@@ -65,6 +69,10 @@ class RENDER_OT_Flipbook_Viewport(bpy.types.Operator):
     bl_idname = "rmi.flipbook_viewport"
     bl_label = "Flipbook Viewport"
     bl_description = "Flipbook Viewport"
+        
+    @classmethod
+    def poll(cls, context):
+        return bpy.context.blend_data.is_saved
 
     def execute(self, context):
 
@@ -128,7 +136,11 @@ class RENDER_OT_Flipbook_Render(bpy.types.Operator):
     bl_idname = "rmi.flipbook_render"
     bl_label = "Flipbook Render"
     bl_description = "Flipbook Render"
-
+    
+    @classmethod
+    def poll(cls, context):
+        return bpy.context.blend_data.is_saved
+        
     def execute(self, context):
 
         try:
@@ -206,8 +218,9 @@ class RENDER_OT_ffmpeg_encode(bpy.types.Operator):
         allowed_ext = file_ext in ('png', 'jpg', 'jpeg')
 
         export_dir_exist = os.path.isdir(get_export_dir())
+        saved = bpy.context.blend_data.is_saved
 
-        return ffmpeg_installed and export_dir_exist and allowed_ext
+        return saved and ffmpeg_installed and export_dir_exist and allowed_ext
 
     def execute(self, context):
 
@@ -226,6 +239,10 @@ class UI_OT_open_render_dir(bpy.types.Operator):
     bl_idname = "rmi.open_render_dir"
     bl_label = "Open Render Directory"
     bl_description = "Open Render Directory"
+    
+    @classmethod
+    def poll(cls, context):
+        return bpy.context.blend_data.is_saved
 
     def execute(self, context):
 
