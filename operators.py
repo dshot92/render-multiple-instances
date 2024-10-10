@@ -5,9 +5,6 @@
 # ----------------------------------------------------------
 
 import bpy
-import subprocess
-
-# from pathlib import Path
 
 from .utils import (
     open_folder,
@@ -19,6 +16,7 @@ from .utils import (
     ffmpeg_installed,
     get_ffmpeg_command_list,
     save_blend_file,
+    start_process,
 )
 
 
@@ -27,20 +25,53 @@ class RENDER_OT_Render(bpy.types.Operator):
     bl_label = "Render Animation with Instances"
     bl_description = "Render Animation with Instances"
 
+    def store_render_settings(self, context):
+        self.original_settings = {
+            'use_overwrite': context.scene.render.use_overwrite,
+            'use_placeholder': context.scene.render.use_placeholder,
+        }
+
+    def restore_render_settings(self, context):
+        for key, value in self.original_settings.items():
+            if key == 'file_format':
+                context.scene.render.image_settings.file_format = value
+            elif hasattr(context.scene.render, key):
+                setattr(context.scene.render, key, value)
+            elif hasattr(context.scene, key):
+                setattr(context.scene, key, value)
+
+    def update_render_settings(self, context, props):
+        context.scene.render.use_overwrite = False
+        context.scene.render.use_placeholder = True
+
     def execute(self, context):
-        props = bpy.context.scene.RMI_Props
-        instances = props.instances
+        props = context.scene.RMI_Props
+        self.store_render_settings(context)
 
-        cmd = get_render_command_list(context)
+        try:
+            self.update_render_settings(context, props)
+            success = save_blend_file()
+            if not success:
+                self.report(
+                    {'ERROR'}, ), "Blend file has never been saved before. Please save the file first."
+                return {'CANCELLED'}
+            instances = props.instances
 
-        save_blend_file()
+            cmd = get_render_command_list(context)
 
-        processes = []
-        for _ in range(instances):
-            p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
-            processes.append(p)
-        for p in processes:
-            p.wait()
+            processes = []
+            for _ in range(instances):
+                p = start_process(cmd)
+                processes.append(p)
+            for p in processes:
+                p.wait()
+
+        except Exception as e:
+            self.report({'ERROR'}, f"Failed to create flipbook: {str(e)}")
+            return {'CANCELLED'}
+        finally:
+            self.restore_render_settings(context)
+            save_blend_file()
 
         self.report({'INFO'}, "Render Created")
         return {'FINISHED'}
@@ -98,9 +129,10 @@ class RenderFlipbookOperatorBase:
 
         try:
             self.update_render_settings(context, props, self.render_type)
-            success, message = save_blend_file()
+            success = save_blend_file()
             if not success:
-                self.report({'ERROR'}, message)
+                self.report(
+                    {'ERROR'}, ), "Blend file has never been saved before. Please save the file first."
                 return {'CANCELLED'}
             render_func()
 
@@ -147,17 +179,17 @@ class RENDER_OT_Flipbook_Render(RenderFlipbookOperatorBase, bpy.types.Operator):
     def execute(self, context):
         def render_func():
             props = bpy.context.scene.RMI_Props
-            output_path = str(self.output_dir)
-            context.scene.render.filepath = output_path
+            out_dir = str(self.output_dir)
+            context.scene.render.filepath = out_dir
             instances = props.instances
 
-            cmd = get_render_command_list(context, output_path)
+            cmd = get_render_command_list(context, out_dir)
 
             save_blend_file()
 
             processes = []
             for _ in range(instances):
-                p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+                p = start_process(cmd)
                 processes.append(p)
             for p in processes:
                 p.wait()
@@ -201,11 +233,11 @@ class RENDER_OT_ffmpeg_encode(bpy.types.Operator):
     def execute(self, context):
         try:
 
-            output_dir = get_absolute_path(context.scene.render.filepath)
+            out_dir = get_absolute_path(context.scene.render.filepath)
 
-            cmd = get_ffmpeg_command_list(context, output_dir)
+            cmd = get_ffmpeg_command_list(context, out_dir)
 
-            _ = subprocess.Popen(cmd, shell=True)
+            _ = start_process(cmd)
 
             return {'FINISHED'}
         except Exception as e:

@@ -74,7 +74,7 @@ class RMI_Props(bpy.types.PropertyGroup):
             ('JPEG', "JPEG", "Save as JPEG format"),
             ('PNG', "PNG", "Save as PNG format"),
         ],
-        default='JPEG'
+        default='PNG'
     )
 
     auto_encode_flipbook: bpy.props.BoolProperty(

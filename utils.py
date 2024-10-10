@@ -13,7 +13,6 @@ import subprocess
 from pathlib import Path
 from enum import Enum
 import shutil
-from typing import Tuple
 
 
 class OS(Enum):
@@ -39,6 +38,33 @@ def is_ffmpeg_installed() -> bool:
     return shutil.which('ffmpeg') is not None
 
 
+def get_encoders() -> list:
+    cmd = ["ffprobe", "-encoders"]
+    try:
+        encoders_list = subprocess.check_output(
+            cmd, stderr=subprocess.STDOUT, text=True)
+    except subprocess.CalledProcessError:
+        return []
+
+    # List of wanted encoders
+    enc = ["libx264", "libx265", "libaom-av1"]
+
+    encoders = []
+    for c in enc:
+        if c in encoders_list:
+            encoders.append((c, c, ""))
+
+    return encoders
+
+
+ffmpeg_installed = is_ffmpeg_installed()
+available_encoders = get_encoders() if ffmpeg_installed else []
+
+
+def get_blend_file() -> Path:
+    return Path(bpy.data.filepath).resolve()
+
+
 def get_absolute_path(path: str) -> Path:
     return (Path(bpy.path.abspath(path))).resolve()
 
@@ -46,6 +72,7 @@ def get_absolute_path(path: str) -> Path:
 def get_blender_bin_path() -> Path:
     blender_bin_path = Path(bpy.app.binary_path)
     return blender_bin_path
+
 
 def get_export_dir() -> Path:
     """
@@ -67,6 +94,7 @@ def get_export_dir() -> Path:
 
     # Return the parent directory with a trailing slash
     return filepath.parent / ''
+
 
 def get_render_command_list(context: bpy.types.Context, output_path: str = None) -> list:
     props = bpy.context.scene.RMI_Props
@@ -220,37 +248,22 @@ def open_folder(path) -> None:
             subprocess.Popen(["xdg-open", path])
 
 
-def save_blend_file() -> Tuple[bool, str]:
-    try:
-        if not bpy.data.is_saved:
-            return False, "Blend file has never been saved before. Please save the file first."
-        bpy.ops.wm.save_mainfile()
-        return True, "Blend file saved successfully."
-    except Exception as e:
-        return False, f"Failed to save blend file: {str(e)}"
+def save_blend_file() -> bool:
+    if not bpy.data.is_saved:
+        return False
+    bpy.ops.wm.save_mainfile()
+    return True
 
 
-def get_encoders() -> list:
-    cmd = ["ffprobe", "-encoders"]
-    try:
-        encoders_list = subprocess.check_output(
-            cmd, stderr=subprocess.STDOUT, text=True)
-    except subprocess.CalledProcessError:
-        return []
-
-    # List of wanted encoders
-    enc = ["libx264", "libx265", "libaom-av1"]
-
-    encoders = []
-    for c in enc:
-        if c in encoders_list:
-            encoders.append((c, c, ""))
-
-    return encoders
-
-ffmpeg_installed = is_ffmpeg_installed()
-available_encoders = get_encoders() if ffmpeg_installed else []
-
-
-def get_blend_file() -> Path:
-    return Path(bpy.data.filepath).resolve()
+def start_process(cmd: list) -> subprocess.Popen | None:
+    p = None
+    match OS.detect_os():
+        case OS.WINDOWS:
+            p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+        case OS.MACOS:
+            p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+        case OS.LINUX:
+            p = subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE)
+        case OS.UNKNOWN:
+            raise RuntimeError("Unsupported platform")
+    return p
