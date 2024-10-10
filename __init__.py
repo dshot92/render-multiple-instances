@@ -4,34 +4,29 @@
 # Author: Daniele Stochino (dshot92)
 # ----------------------------------------------------------
 
-from . import (
+import importlib
+
+from . import properties, operators, panels
+
+modules = [
     properties,
     operators,
-    panels
-)
+    panels,
+]
 
 
 if "bpy" in locals():
-    import importlib
-
-    reloadable_modules = [
-        "properties",
-        "operators"
-        "panels"
-    ]
-
-    for module in reloadable_modules:
-        if module in locals():
-            importlib.reload(locals()[module])
+    importlib.reload(properties)
+    importlib.reload(operators)
+    importlib.reload(panels)
 
 
 def register():
-    properties.register()
-    operators.register()
-    panels.register()
+    for module in modules:
+        importlib.reload(module)
+        module.register()
 
 
 def unregister():
-    panels.unregister()
-    operators.unregister()
-    properties.unregister()
+    for module in reversed(modules):
+        module.unregister()
