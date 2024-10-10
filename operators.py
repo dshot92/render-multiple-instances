@@ -7,16 +7,43 @@
 import bpy
 import subprocess
 
-from pathlib import Path
+# from pathlib import Path
 
 from .utils import (
     open_folder,
     get_blend_file,
+    get_absolute_path,
+    get_export_dir,
+    get_render_command_list,
     set_flipbook_render_output_path,
-    is_ffmpeg_installed,
+    ffmpeg_installed,
     get_ffmpeg_command_list,
     save_blend_file,
 )
+
+
+class RENDER_OT_Render(bpy.types.Operator):
+    bl_idname = "rmi.render_animation"
+    bl_label = "Render Animation with Instances"
+    bl_description = "Render Animation with Instances"
+
+    def execute(self, context):
+        props = bpy.context.scene.RMI_Props
+        instances = props.instances
+
+        cmd = get_render_command_list(context)
+
+        save_blend_file()
+
+        processes = []
+        for _ in range(instances):
+            p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+            processes.append(p)
+        for p in processes:
+            p.wait()
+
+        self.report({'INFO'}, "Render Created")
+        return {'FINISHED'}
 
 
 class RenderFlipbookOperatorBase:
@@ -76,6 +103,14 @@ class RenderFlipbookOperatorBase:
                 self.report({'ERROR'}, message)
                 return {'CANCELLED'}
             render_func()
+
+            if context.scene.RMI_Props.auto_encode_flipbook:
+                bpy.ops.rmi.ffmpeg_encode()
+            else:
+                self.report(
+                    {'INFO'},
+                    "Auto encode is disabled. Flipbook images saved without video encoding.")
+
         except Exception as e:
             self.report({'ERROR'}, f"Failed to create flipbook: {str(e)}")
             return {'CANCELLED'}
@@ -88,30 +123,6 @@ class RenderFlipbookOperatorBase:
         return {'FINISHED'}
 
 
-class RENDER_OT_Render(bpy.types.Operator):
-    bl_idname = "rmi.render_animation"
-    bl_label = "Render Animation with Instances"
-    bl_description = "Render Animation with Instances"
-
-    render_type = 'render'
-
-    def execute(self, context):
-        pass
-        # def render_func():
-        #     instances = context.scene.RMI_Props.instances
-        #     cmd = get_render_command_list(context, is_flipbook=False)
-        #
-        #     for i in range(instances):
-        #         return_code, stdout, stderr = run_command(cmd)
-        #         if return_code != 0:
-        #             self.report({'ERROR'},
-        #                         f"Render process {i+1} failed. Error: {stderr}")
-        #         else:
-        #             print(f"Render process {i+1} completed successfully")
-        #
-        # return self.execute_render(context, render_func)
-
-
 class RENDER_OT_Flipbook_Viewport(RenderFlipbookOperatorBase, bpy.types.Operator):
     bl_idname = "rmi.flipbook_viewport"
     bl_label = "Flipbook Viewport"
@@ -121,15 +132,7 @@ class RENDER_OT_Flipbook_Viewport(RenderFlipbookOperatorBase, bpy.types.Operator
 
     def execute(self, context):
         def render_func():
-
             bpy.ops.render.opengl(animation=True, write_still=True)
-
-            if context.scene.RMI_Props.auto_encode_flipbook:
-                bpy.ops.rmi.ffmpeg_encode()
-            else:
-                self.report(
-                    {'INFO'},
-                    "Auto encode is disabled. Flipbook images saved without video encoding.")
 
         return self.execute_render(context, render_func)
 
@@ -143,7 +146,22 @@ class RENDER_OT_Flipbook_Render(RenderFlipbookOperatorBase, bpy.types.Operator):
 
     def execute(self, context):
         def render_func():
-            bpy.ops.render.render(animation=True, write_still=True)
+            props = bpy.context.scene.RMI_Props
+            output_path = str(self.output_dir)
+            context.scene.render.filepath = output_path
+            instances = props.instances
+
+            cmd = get_render_command_list(context, output_path)
+
+            save_blend_file()
+
+            processes = []
+            for _ in range(instances):
+                p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+                processes.append(p)
+            for p in processes:
+                p.wait()
+
         return self.execute_render(context, render_func)
 
 
@@ -154,12 +172,26 @@ class RENDER_OT_ffmpeg_encode(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        if not is_ffmpeg_installed():
+        export_dir = get_export_dir()
+        if not export_dir.is_dir():
+            cls.poll_message_set(
+                f"Export Directory not found:\n{export_dir}")
+            return False
+
+        file_ext = str(context.scene.render.image_settings.file_format).lower()
+        allowed_ext = file_ext in ('png', 'jpg', 'jpeg')
+        if not allowed_ext:
+            cls.poll_message_set(
+                f"Unsupported file format: {file_ext}")
+            return False
+
+        if not ffmpeg_installed:
             cls.poll_message_set(
                 "FFmpeg is not installed. Please install FFmpeg first.")
             return False
 
-        if not bpy.data.is_saved:
+        saved = bpy.context.blend_data.is_saved
+        if not saved:
             cls.poll_message_set(
                 "Blend file is not saved. Please save the file first.")
             return False
@@ -168,7 +200,8 @@ class RENDER_OT_ffmpeg_encode(bpy.types.Operator):
 
     def execute(self, context):
         try:
-            output_dir = Path(context.scene.render.filepath)
+
+            output_dir = get_absolute_path(context.scene.render.filepath)
 
             cmd = get_ffmpeg_command_list(context, output_dir)
 

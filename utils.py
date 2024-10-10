@@ -43,6 +43,55 @@ def get_absolute_path(path: str) -> Path:
     return (Path(bpy.path.abspath(path))).resolve()
 
 
+def get_blender_bin_path() -> Path:
+    blender_bin_path = Path(bpy.app.binary_path)
+    return blender_bin_path
+
+def get_export_dir() -> Path:
+    """
+    Get always first directory from the filepath:
+
+    Example:
+    //export/v001/            -> //export/v001/
+    //export/v001/temp        -> //export/v001/
+    //export/v001/temp###     -> //export/v001/
+    //export/v001/temp###.png -> //export/v001/
+    """
+    filepath_str = bpy.path.abspath(bpy.context.scene.render.filepath)
+    filepath = Path(filepath_str)
+
+    # Check if the path is a directory path or ends with a separator
+    if filepath.is_dir() or filepath_str.endswith('/'):
+        # Return as-is if it's a directory path or ends with a separator
+        return filepath
+
+    # Return the parent directory with a trailing slash
+    return filepath.parent / ''
+
+def get_render_command_list(context: bpy.types.Context, output_path: str = None) -> list:
+    props = bpy.context.scene.RMI_Props
+
+    blender_bin_path = get_blender_bin_path()
+    blend_file_path = get_blend_file()
+
+    start_frame = context.scene.frame_start
+    end_frame = context.scene.frame_end
+
+    # Override if start_frame > end_frame and are > 0
+    if props.start_frame > props.end_frame:
+        start_frame = props.start_frame
+        end_frame = props.end_frame
+
+    cmd = [f'{blender_bin_path}', "-b", f'{blend_file_path}',
+           "-s", f"{start_frame}", "-e", f"{end_frame}", "-a"]
+
+    # Add output path if provided
+    if output_path:
+        cmd.extend(["-o", output_path])
+
+    return get_platform_terminal_command_list(cmd)
+
+
 def set_flipbook_render_output_path(context, render_type: str) -> str:
     props = context.scene.RMI_Props
     base_path = str(get_absolute_path(props.flipbook_dir))
@@ -198,7 +247,6 @@ def get_encoders() -> list:
             encoders.append((c, c, ""))
 
     return encoders
-
 
 ffmpeg_installed = is_ffmpeg_installed()
 available_encoders = get_encoders() if ffmpeg_installed else []
