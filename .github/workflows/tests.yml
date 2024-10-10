@@ -46,8 +46,8 @@ jobs:
 
       - name: Copy add-on to Blender add-on's directory
         run: |
-          mkdir -p ~/.config/blender/${{ matrix.blender_version }}/scripts/addons
-          cp -r . ~/.config/blender/${{ matrix.blender_version }}/scripts/addons/render_multiple_instances
+          mkdir -p ~/.config/blender/${{ matrix.blender_version }}/extensions/user_default
+          cp -r . ~/.config/blender/${{ matrix.blender_version }}/extensions/user_default/render_multiple_instances
 
 
       - name: Run add-on unittest
