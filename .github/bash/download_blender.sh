@@ -56,6 +56,7 @@ declare -A BLENDER_CHECKSUM_URL_PATTERN=(
     ["v4.1"]="blender-4\\.1\\.([0-9]+)\\.md5"
     ["v4.2"]="blender-4\\.2\\.([0-9]+)\\.md5"
     ["v4.3"]="blender-4\\.3\\.([0-9]+)\\.md5"
+)
 
 function get_extractor() {
     local file_extension=${1}
