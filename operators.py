@@ -171,7 +171,7 @@ class RENDER_OT_ffmpeg_encode(bpy.types.Operator):
             return False
 
         file_ext = str(context.scene.render.image_settings.file_format).lower()
-        allowed_ext = file_ext in ('png', 'jpg')
+        allowed_ext = file_ext in ('png', 'jpg', 'jpeg')
         if not allowed_ext:
             cls.poll_message_set(
                 f"Unsupported file format: {file_ext}")
