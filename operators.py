@@ -31,6 +31,8 @@ class RENDER_OT_Render(Operator):
         self.original_settings = {
             'use_overwrite': context.scene.render.use_overwrite,
             'use_placeholder': context.scene.render.use_placeholder,
+            'frame_start': context.scene.frame_start,
+            'frame_end': context.scene.frame_end,
         }
 
     def restore_render_settings(self, context):
@@ -45,6 +47,9 @@ class RENDER_OT_Render(Operator):
     def update_render_settings(self, context, props):
         context.scene.render.use_overwrite = False
         context.scene.render.use_placeholder = True
+        if props.override_range:
+            context.scene.frame_start = props.start_frame
+            context.scene.frame_end = props.end_frame
 
     def execute(self, context):
         props = context.scene.RMI_Props
@@ -71,6 +76,12 @@ class RENDER_OT_Render(Operator):
             self.report({'ERROR'}, f"Failed to create flipbook: {str(e)}")
             return {'CANCELLED'}
         finally:
+            if ffmpeg_installed and context.scene.RMI_Props.auto_encode:
+                bpy.ops.rmi.ffmpeg_encode()
+            else:
+                self.report(
+                    {'INFO'},
+                    "Auto encode is disabled. Flipbook images saved without video encoding.")
             self.restore_render_settings(context)
             save_blend_file()
 
@@ -145,7 +156,7 @@ class RenderFlipbookOperatorBase:
 
             render_func()
 
-            if context.scene.RMI_Props.auto_encode_flipbook:
+            if ffmpeg_installed and context.scene.RMI_Props.auto_encode:
                 bpy.ops.rmi.ffmpeg_encode()
             else:
                 self.report(
