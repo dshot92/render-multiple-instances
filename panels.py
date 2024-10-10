@@ -77,7 +77,7 @@ class RENDER_PT_RenderScriptInstances(bpy.types.Panel):
             row.prop(props, "end_frame", text="Flip End")
             panel.prop(props, "res_percentage", text="Resolution %")
             panel.prop(props, "instances", text="Instances")
-
+            panel.prop(props, "use_stamp", text="Use Stamp")
             panel.prop(props, "encoder", text="Encoder")
             panel.prop(props, "quality", text="Quality")
 

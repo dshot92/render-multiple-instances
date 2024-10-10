@@ -54,10 +54,12 @@ class RENDER_OT_Render(bpy.types.Operator):
 class FlipbookOperatorBase:
     @classmethod
     def poll(cls, context):
-        saved = bpy.context.blend_data.is_saved
-        if not saved:
+        if not bpy.data.is_saved:
             cls.poll_message_set("Blend file is not saved. Please save the file first.")
-        return saved
+            return False
+        if not ffmpeg_installed:
+            cls.poll_message_set("FFmpeg is not installed. Flipbook will be created, but video encoding will be skipped.")
+        return True
 
     def store_render_settings(self, context):
         self.original_settings = {
@@ -86,6 +88,7 @@ class FlipbookOperatorBase:
         context.scene.render.resolution_percentage = props.res_percentage
         context.scene.render.filepath = set_render_path(render_type)
         context.scene.render.image_settings.file_format = 'JPEG'
+        context.scene.render.use_stamp = props.use_stamp
         
         if props.override_range:
             context.scene.frame_start = props.start_frame
@@ -108,6 +111,8 @@ class FlipbookOperatorBase:
         finally:
             if ffmpeg_installed:
                 bpy.ops.rmi.ffmpeg_encode()
+            else:
+                self.report({'WARNING'}, "FFmpeg is not installed. Video encoding was skipped.")
             self.restore_render_settings(context)
             save_blend_file()
 
@@ -124,7 +129,6 @@ class RENDER_OT_Flipbook_Viewport(FlipbookOperatorBase, bpy.types.Operator):
 
     def execute(self, context):
         def render_func():
-            context.scene.render.use_stamp = True
             bpy.ops.render.opengl(animation=True)
 
         return self.execute_common(context, render_func)

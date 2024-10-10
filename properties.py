@@ -63,6 +63,12 @@ class RMI_Props(bpy.types.PropertyGroup):
         items=available_encoders,
     )
 
+    use_stamp: bpy.props.BoolProperty(
+        name="Use Stamp",
+        description="Add stamp to rendered images",
+        default=True
+    )
+
 
 classes = (RMI_Props,)
 
