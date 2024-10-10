@@ -49,18 +49,17 @@ class RENDER_PT_RenderScriptInstances(bpy.types.Panel):
             "panel_render_settings", default_closed=False)
         header.label(text="Render Settings", icon="SETTINGS")
 
-        # Flipbook Folder
-
         if panel:
             col = panel.column(align=True)
-            col.prop(props, "flipbook_dir")
+            col.prop(props, "flipbook_dir", text="Flipbook Dir")
             col.prop(props, "instances", text="Instances")
             col.prop(props, "res_percentage", text="Resolution %")
             col.prop(props, "file_format", text="File Format")
             col.prop(props, "use_stamp", text="Use Stamp")
+            col.prop(props, "auto_encode", text="Auto Encode")
 
         # Frame Range Settings
-        header, panel = layout.panel("panel_frame_range", default_closed=False)
+        header, panel = layout.panel("panel_frame_range", default_closed=True)
         header.label(text="Frame Range", icon="TIME")
 
         if panel:
@@ -72,13 +71,11 @@ class RENDER_PT_RenderScriptInstances(bpy.types.Panel):
             sub.prop(props, "end_frame", text="End Frame")
 
         # Encoding Settings
-        header, panel = layout.panel("panel_encoding", default_closed=False)
+        header, panel = layout.panel("panel_encoding", default_closed=True)
         header.label(text="Encoding Settings", icon="MODIFIER")
 
         if panel:
             col = panel.column(align=True)
-            col.prop(props, "auto_encode_flipbook",
-                     text="Auto Encode Flipbook")
             col.prop(props, "encoder", text="Encoder")
             col.prop(props, "quality", text="Quality")
 
