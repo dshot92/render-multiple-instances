@@ -79,6 +79,15 @@ class RENDER_OT_Render(Operator):
 
 
 class RenderFlipbookOperatorBase:
+    """
+    Handle rendering flipbooks
+    Steps:
+        1. Store scene settings
+        2. Save file
+        3. Update settings from properties
+        4. Call render
+        5. Restore settings
+    """
     @classmethod
     def poll(cls, context):
         if not bpy.data.is_saved:
@@ -133,6 +142,7 @@ class RenderFlipbookOperatorBase:
             if not success:
                 self.report({'ERROR'}, ), "Blend file is not saved."
                 return {'CANCELLED'}
+
             render_func()
 
             if context.scene.RMI_Props.auto_encode_flipbook:
