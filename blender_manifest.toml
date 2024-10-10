@@ -27,6 +27,12 @@ license = ["SPDX:GPL-3.0-or-later"]
 # Optional: required by some licenses.
 copyright = ["2020-2024 Daniele Stochino"]
 
+paths_exclude_pattern = [
+  "__pycache__/",
+  "/.git/",
+  "/*.zip",
+  "/tests/"
+]
 # Optional: add-ons can list which resources they will require:
 # * "files" (for access of any filesystem operations)
 # * "network" (for internet access)
