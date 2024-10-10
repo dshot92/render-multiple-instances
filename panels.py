@@ -5,7 +5,7 @@
 # ----------------------------------------------------------
 
 import bpy
-from .utils import ffmpeg_installed
+
 
 class RENDER_PT_RenderScriptInstances(bpy.types.Panel):
 
@@ -26,9 +26,12 @@ class RENDER_PT_RenderScriptInstances(bpy.types.Panel):
 
         if panel:
             col = panel.column(align=True)
-            col.operator("rmi.render_animation", text="Render Animation", icon="RENDER_ANIMATION")
-            col.operator("rmi.ffmpeg_encode", text="FFmpeg Encode Render", icon="FILE_MOVIE")
-            col.operator("rmi.open_render_dir", text="Open Render Directory", icon="FILE_FOLDER")
+            col.operator("rmi.render_animation",
+                         text="Render Animation", icon="RENDER_ANIMATION")
+            col.operator("rmi.ffmpeg_encode",
+                         text="FFmpeg Encode Render", icon="FILE_MOVIE")
+            col.operator("rmi.open_render_dir",
+                         text="Open Render Directory", icon="FILE_FOLDER")
 
         # Flipbook Operations
         header, panel = layout.panel("panel_flipbook", default_closed=False)
@@ -36,11 +39,14 @@ class RENDER_PT_RenderScriptInstances(bpy.types.Panel):
 
         if panel:
             col = panel.column(align=True)
-            col.operator("rmi.flipbook_viewport", text="Flipbook Viewport", icon="RESTRICT_VIEW_OFF")
-            col.operator("rmi.flipbook_render", text="Flipbook Render", icon="RENDER_ANIMATION")
+            col.operator("rmi.flipbook_viewport",
+                         text="Flipbook Viewport", icon="RESTRICT_VIEW_OFF")
+            col.operator("rmi.flipbook_render",
+                         text="Flipbook Render", icon="RENDER_ANIMATION")
 
         # Render Settings
-        header, panel = layout.panel("panel_render_settings", default_closed=False)
+        header, panel = layout.panel(
+            "panel_render_settings", default_closed=False)
         header.label(text="Render Settings", icon="SETTINGS")
 
         # Flipbook Folder
@@ -71,7 +77,8 @@ class RENDER_PT_RenderScriptInstances(bpy.types.Panel):
 
         if panel:
             col = panel.column(align=True)
-            col.prop(props, "auto_encode_flipbook", text="Auto Encode Flipbook")
+            col.prop(props, "auto_encode_flipbook",
+                     text="Auto Encode Flipbook")
             col.prop(props, "encoder", text="Encoder")
             col.prop(props, "quality", text="Quality")
 
