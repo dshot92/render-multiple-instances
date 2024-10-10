@@ -13,6 +13,7 @@ import subprocess
 from pathlib import Path
 from enum import Enum
 import shutil
+import shlex
 
 
 class OS(Enum):
@@ -140,8 +141,8 @@ def get_render_command_list(context: bpy.types.Context) -> list:
 
     props = bpy.context.scene.RMI_Props
 
-    blender_bin_path = get_blender_bin_path()
-    blend_file_path = get_blend_file()
+    blender_bin_path = shlex.quote(str(get_blender_bin_path()))
+    blend_file_path = shlex.quote(str(get_blend_file()))
 
     start_frame = context.scene.frame_start
     end_frame = context.scene.frame_end
@@ -151,7 +152,7 @@ def get_render_command_list(context: bpy.types.Context) -> list:
         start_frame = props.start_frame
         end_frame = props.end_frame
 
-    cmd = [f'{blender_bin_path}', "-b", f'{blend_file_path}',
+    cmd = [blender_bin_path, "-b", blend_file_path,
            "-s", f"{start_frame}", "-e", f"{end_frame}", "-a"]
 
     return get_platform_terminal_command_list(cmd)
@@ -242,8 +243,8 @@ def get_ffmpeg_command_list() -> list:
     quality = props.quality
     fps = bpy.context.scene.render.fps
 
-    frame_list_file = get_frame_list_path()
-    output_file = get_mp4_output_path()
+    frame_list_file = shlex.quote(str(get_frame_list_path()))
+    output_file = shlex.quote(str(get_mp4_output_path()))
 
     cmd = []
     # https://ntown.at/de/knowledgebase/cuda-gpu-accelerated-h264-h265-hevc-video-encoding-with-ffmpeg/
@@ -253,26 +254,26 @@ def get_ffmpeg_command_list() -> list:
             # -i "{frame_list_file}" -pix_fmt yuv420p -c:v {encoder}
             # -crf {quality} -tune fastdecode "{output_file}" -y'
             cmd = ["ffmpeg", "-safe", "0", "-r", f"{fps}", "-f",
-                   "concat", "-i", f'"{frame_list_file}"',
+                   "concat", "-i", frame_list_file,
                    "-pix_fmt", "yuv420p", "-c:v",
                    f"{encoder}", "-crf", f"{quality}",
-                   f'"{output_file}"', "-y"]
+                   output_file, "-y"]
         case "libx265":
             # ffmpeg -i input.mov -pix_fmt yuv420p -c:v libx265
             # -crf 18 -tune fastdecode -g 1 output.mp4
             cmd = ["ffmpeg", "-safe", "0", "-r", f"{fps}", "-f",
-                   "concat", "-i", f'"{frame_list_file}"', "-pix_fmt",
+                   "concat", "-i", frame_list_file, "-pix_fmt",
                    "yuv420p", "-c:v", f"{encoder}", "-crf",
                    f"{quality}", "-tune", "fastdecode", "-g", "1",
-                   f'"{output_file}"', "-y"]
+                   output_file, "-y"]
         case "libaom-av1":
             # ffmpeg -i input.mov -pix_fmt yuv420p -c:v libx265 -crf 18
             # -tune fastdecode -g 1 output.mp4
             cmd = ["ffmpeg", "-strict", "-2", "-safe", "0", "-r",
                    f"{fps}", "-f", "concat", "-i",
-                   f'"{frame_list_file}"', "-c:v", f"{encoder}",
+                   frame_list_file, "-c:v", f"{encoder}",
                    "-strict", "-2", "-crf", f"{quality}",
-                   f'"{output_file}"', "-y"]
+                   output_file, "-y"]
 
     return get_platform_terminal_command_list(cmd)
 
