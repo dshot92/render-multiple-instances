@@ -78,6 +78,7 @@ class RENDER_PT_RenderScriptInstances(bpy.types.Panel):
             panel.prop(props, "res_percentage", text="Resolution %")
             panel.prop(props, "instances", text="Instances")
             panel.prop(props, "use_stamp", text="Use Stamp")
+            panel.prop(props, "file_format", text="File Format")  # Add this line
             panel.prop(props, "encoder", text="Encoder")
             panel.prop(props, "quality", text="Quality")
 

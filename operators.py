@@ -87,7 +87,7 @@ class FlipbookOperatorBase:
         context.scene.render.use_placeholder = True
         context.scene.render.resolution_percentage = props.res_percentage
         context.scene.render.filepath = set_render_path(render_type)
-        context.scene.render.image_settings.file_format = 'JPEG'
+        context.scene.render.image_settings.file_format = props.file_format
         context.scene.render.use_stamp = props.use_stamp
         
         if props.override_range:

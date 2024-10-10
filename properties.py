@@ -69,6 +69,16 @@ class RMI_Props(bpy.types.PropertyGroup):
         default=True
     )
 
+    file_format: bpy.props.EnumProperty(
+        name="File Format",
+        description="Choose the file format for flipbook renders",
+        items=[
+            ('JPEG', "JPEG", "Save as JPEG format"),
+            ('PNG', "PNG", "Save as PNG format"),
+        ],
+        default='JPEG'
+    )
+
 
 classes = (RMI_Props,)
 

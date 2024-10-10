@@ -180,7 +180,7 @@ def get_frame_list_path() -> Path:
 
     frame_list_file = Path(export_dir, "ffmpeg_frame_list.txt")
 
-    files = [file for ext in ['*.png', '*.jpg', '*.jpeg']
+    files = [file for ext in ['*.png', '*.jpg']
              for file in glob.glob(os.path.join(export_dir, ext))]
 
     files.sort()
