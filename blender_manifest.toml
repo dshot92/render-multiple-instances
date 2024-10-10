@@ -32,12 +32,13 @@ copyright = ["2020-2024 Daniele Stochino"]
 # * "network" (for internet access)
 # * "camera" (to capture photos and videos)
 # * "microphone" (to capture audio)
-[permissions]
-files = "Save and read exports images"
-
 paths_exclude_pattern = [
   "__pycache__/",
   "/.git/",
   "/*.zip",
   "tests/",
 ]
+
+[permissions]
+files = "Save and read exports images"
+
