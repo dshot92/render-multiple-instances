@@ -76,12 +76,11 @@ class RENDER_OT_Render(Operator):
             self.report({'ERROR'}, f"Failed to create flipbook: {str(e)}")
             return {'CANCELLED'}
         finally:
-            if ffmpeg_installed and context.scene.RMI_Props.auto_encode:
+            if ffmpeg_installed and (context.scene.render.image_settings.file_format.lower() in ['jpg', 'jpeg', 'png']) and context.scene.RMI_Props.auto_encode:
                 bpy.ops.rmi.ffmpeg_encode()
             else:
-                self.report(
-                    {'INFO'},
-                    "Auto encode is disabled. Flipbook images saved without video encoding.")
+                self.report({'INFO'}, "Auto encode is disabled.")
+
             self.restore_render_settings(context)
             save_blend_file()
 
