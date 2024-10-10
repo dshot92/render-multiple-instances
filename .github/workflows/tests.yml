@@ -20,7 +20,7 @@ jobs:
       fail-fast: false
       matrix:
         # blender_version: ["4.2", "4.3", "4.4"]
-        blender_version: ["4.2"]
+        blender_version: ["4.2", "4.3"]
         python-version: ["3.10"]
     steps:
       - name: Checkout repo
@@ -42,7 +42,7 @@ jobs:
           pip install pytest fake-bpy-module
 
       - name: Download Blender
-        run: bash .github/workflows/download_blender.sh ${{ matrix.blender_version }} blender-bin
+        run: bash .github/bash/download_blender.sh ${{ matrix.blender_version }} blender-bin
 
       - name: Copy add-on to Blender add-on's directory
         run: |
