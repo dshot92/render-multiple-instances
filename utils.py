@@ -286,3 +286,21 @@ def open_folder(path) -> None:
             subprocess.Popen(["open", path])
         case OS.LINUX:
             subprocess.Popen(["xdg-open", path])
+
+
+def save_blend_file():
+    """
+    Save the current blend file.
+    
+    Returns:
+        tuple: (success, message)
+        success (bool): True if the file was saved successfully, False otherwise.
+        message (str): A message describing the result of the operation.
+    """
+    try:
+        if not bpy.data.is_saved:
+            return False, "Blend file has never been saved before. Please save the file first."
+        bpy.ops.wm.save_mainfile()
+        return True, "Blend file saved successfully."
+    except Exception as e:
+        return False, f"Failed to save blend file: {str(e)}"
