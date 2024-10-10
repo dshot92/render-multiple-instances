@@ -109,10 +109,12 @@ class FlipbookOperatorBase:
             self.report({'ERROR'}, f"Failed to create flipbook: {str(e)}")
             return {'CANCELLED'}
         finally:
-            if ffmpeg_installed:
+            if ffmpeg_installed and props.auto_encode_flipbook:
                 bpy.ops.rmi.ffmpeg_encode()
-            else:
+            elif not ffmpeg_installed:
                 self.report({'WARNING'}, "FFmpeg is not installed. Video encoding was skipped.")
+            elif not props.auto_encode_flipbook:
+                self.report({'INFO'}, "Auto encode is disabled. Flipbook images saved without video encoding.")
             self.restore_render_settings(context)
             save_blend_file()
 
@@ -169,7 +171,7 @@ class RENDER_OT_ffmpeg_encode(bpy.types.Operator):
             return False
 
         file_ext = str(context.scene.render.image_settings.file_format).lower()
-        allowed_ext = file_ext in ('png', 'jpg', 'jpeg')
+        allowed_ext = file_ext in ('png', 'jpg')
         if not allowed_ext:
             cls.poll_message_set(
                 f"Unsupported file format: {file_ext}")

@@ -79,6 +79,12 @@ class RMI_Props(bpy.types.PropertyGroup):
         default='JPEG'
     )
 
+    auto_encode_flipbook: bpy.props.BoolProperty(
+        name="Auto Encode Flipbook",
+        description="Automatically encode flipbook to video after rendering",
+        default=True
+    )
+
 
 classes = (RMI_Props,)
 
