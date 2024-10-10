@@ -42,6 +42,8 @@ class RENDER_PT_RenderScriptInstances(bpy.types.Panel):
         # Render Settings
         header, panel = layout.panel("panel_render_settings", default_closed=False)
         header.label(text="Render Settings", icon="SETTINGS")
+        # Flipbook Folder
+        panel.prop(props, "flipbook_dir")
 
         if panel:
             col = panel.column(align=True)
@@ -71,6 +73,7 @@ class RENDER_PT_RenderScriptInstances(bpy.types.Panel):
             col.prop(props, "auto_encode_flipbook", text="Auto Encode Flipbook")
             col.prop(props, "encoder", text="Encoder")
             col.prop(props, "quality", text="Quality")
+
 
 classes = (
     RENDER_PT_RenderScriptInstances,

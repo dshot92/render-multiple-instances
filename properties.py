@@ -5,8 +5,6 @@
 # ----------------------------------------------------------
 
 import bpy
-
-
 from .utils import (available_encoders)
 
 
@@ -83,6 +81,13 @@ class RMI_Props(bpy.types.PropertyGroup):
         name="Auto Encode Flipbook",
         description="Automatically encode flipbook to video after rendering",
         default=True
+    )
+
+    flipbook_dir: bpy.props.StringProperty(
+        name="Flipbook Directory",
+        description="Directory to store flipbook renders",
+        default="//flipbooks/",
+        subtype='DIR_PATH'
     )
 
 
