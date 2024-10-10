@@ -1,0 +1,55 @@
+---
+# yamllint disable rule:line-length
+name: Render Multiple Instances CI
+
+on:
+  push:
+    branches:
+      - test
+    tags:
+      - "v*"
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+
+  test-addon:
+    name: Test add-on
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        blender_version: ["4.2", "4.3", "4.4"]
+        python-version: ["3.10"]
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Get required packages for Blender
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y blender wget python3 python3-pip zip
+
+      - name: Get required pip packages
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest fake-bpy-module-${{ matrix.blender_version }}
+
+      - name: Download Blender
+        run: bash .github/workflows/download_blender.sh ${{ matrix.blender_version }} blender-bin
+
+      - name: Copy add-on to Blender add-on's directory
+        run: |
+          mkdir -p ~/.config/blender/${{ matrix.blender_version }}/scripts/addons
+          cp -r . ~/.config/blender/${{ matrix.blender_version }}/scripts/addons/render_multiple_instances
+
+
+      - name: Run add-on unittest
+        run: blender-bin/blender-v${{ matrix.blender_version }}-bin/blender --factory-startup --background -noaudio --python run_tests.py
+        env:
+          RMI_CONSOLE_MODE: true
