@@ -6,6 +6,8 @@
 
 import bpy
 
+from bpy.types import Operator
+
 from .utils import (
     open_folder,
     get_blend_file,
@@ -20,7 +22,7 @@ from .utils import (
 )
 
 
-class RENDER_OT_Render(bpy.types.Operator):
+class RENDER_OT_Render(Operator):
     bl_idname = "rmi.render_animation"
     bl_label = "Render Animation with Instances"
     bl_description = "Render Animation with Instances"
@@ -52,8 +54,7 @@ class RENDER_OT_Render(bpy.types.Operator):
             self.update_render_settings(context, props)
             success = save_blend_file()
             if not success:
-                self.report(
-                    {'ERROR'}, ), "Blend file has never been saved before. Please save the file first."
+                self.report({'ERROR'}, ), "Blend file is not saved."
                 return {'CANCELLED'}
             instances = props.instances
 
@@ -81,8 +82,7 @@ class RenderFlipbookOperatorBase:
     @classmethod
     def poll(cls, context):
         if not bpy.data.is_saved:
-            cls.poll_message_set(
-                "Blend file is not saved. Please save the file first.")
+            cls.poll_message_set("Blend file is not saved.")
             return False
         return True
 
@@ -131,8 +131,7 @@ class RenderFlipbookOperatorBase:
             self.update_render_settings(context, props, self.render_type)
             success = save_blend_file()
             if not success:
-                self.report(
-                    {'ERROR'}, ), "Blend file has never been saved before. Please save the file first."
+                self.report({'ERROR'}, ), "Blend file is not saved."
                 return {'CANCELLED'}
             render_func()
 
@@ -150,12 +149,12 @@ class RenderFlipbookOperatorBase:
             self.restore_render_settings(context)
             save_blend_file()
 
-        self.report({'INFO'},
-                    f"Flipbook {self.render_type.capitalize()} Created in {self.output_dir}")
+        self.report(
+            {'INFO'}, f"Flipbook {self.render_type.capitalize()} Created in {self.output_dir}")
         return {'FINISHED'}
 
 
-class RENDER_OT_Flipbook_Viewport(RenderFlipbookOperatorBase, bpy.types.Operator):
+class RENDER_OT_Flipbook_Viewport(RenderFlipbookOperatorBase, Operator):
     bl_idname = "rmi.flipbook_viewport"
     bl_label = "Flipbook Viewport"
     bl_description = "Flipbook Viewport"
@@ -169,7 +168,7 @@ class RENDER_OT_Flipbook_Viewport(RenderFlipbookOperatorBase, bpy.types.Operator
         return self.execute_render(context, render_func)
 
 
-class RENDER_OT_Flipbook_Render(RenderFlipbookOperatorBase, bpy.types.Operator):
+class RENDER_OT_Flipbook_Render(RenderFlipbookOperatorBase, Operator):
     bl_idname = "rmi.flipbook_render"
     bl_label = "Flipbook Render"
     bl_description = "Flipbook Render"
@@ -197,7 +196,7 @@ class RENDER_OT_Flipbook_Render(RenderFlipbookOperatorBase, bpy.types.Operator):
         return self.execute_render(context, render_func)
 
 
-class RENDER_OT_ffmpeg_encode(bpy.types.Operator):
+class RENDER_OT_ffmpeg_encode(Operator):
     bl_idname = "rmi.ffmpeg_encode"
     bl_label = "Encode rendered frames into video"
     bl_description = "Encode rendered frames into video"
@@ -224,8 +223,7 @@ class RENDER_OT_ffmpeg_encode(bpy.types.Operator):
 
         saved = bpy.context.blend_data.is_saved
         if not saved:
-            cls.poll_message_set(
-                "Blend file is not saved. Please save the file first.")
+            cls.poll_message_set("Blend file is not saved.")
             return False
 
         return True
@@ -246,7 +244,7 @@ class RENDER_OT_ffmpeg_encode(bpy.types.Operator):
             return {'CANCELLED'}
 
 
-class UI_OT_open_render_dir(bpy.types.Operator):
+class UI_OT_open_render_dir(Operator):
     bl_idname = "rmi.open_render_dir"
     bl_label = "Open Render Directory"
     bl_description = "Open Render Directory"

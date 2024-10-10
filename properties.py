@@ -5,6 +5,7 @@
 # ----------------------------------------------------------
 
 import bpy
+
 from .utils import (available_encoders)
 
 
