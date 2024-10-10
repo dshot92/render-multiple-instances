@@ -31,6 +31,7 @@ declare -A BLENDER_DOWNLOAD_URL_LINUX_PATTERN=(
     ["v4.0"]="blender-4\\.0\\.([0-9]+)-linux.*?\\.tar\\.xz"
     ["v4.1"]="blender-4\\.1\\.([0-9]+)-linux.*?\\.tar\\.xz"
     ["v4.2"]="blender-4\\.2\\.([0-9]+)-linux.*?\\.tar\\.xz"
+    ["v4.3"]="blender-4\\.3\\.([0-9]+)-linux.*?\\.tar\\.xz"
 )
 
 declare -A BLENDER_CHECKSUM_URL_PATTERN=(
@@ -54,7 +55,7 @@ declare -A BLENDER_CHECKSUM_URL_PATTERN=(
     ["v4.0"]="blender-4\\.0\\.([0-9]+)\\.md5"
     ["v4.1"]="blender-4\\.1\\.([0-9]+)\\.md5"
     ["v4.2"]="blender-4\\.2\\.([0-9]+)\\.md5"
-)
+    ["v4.3"]="blender-4\\.3\\.([0-9]+)\\.md5"
 
 function get_extractor() {
     local file_extension=${1}
