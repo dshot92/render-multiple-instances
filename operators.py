@@ -70,6 +70,7 @@ class RENDER_OT_Render(Operator):
                 p = start_process(cmd)
                 processes.append(p)
             for p in processes:
+                p.communicate()
                 p.wait()
 
         except Exception as e:
@@ -208,6 +209,7 @@ class RENDER_OT_Flipbook_Render(RenderFlipbookOperatorBase, Operator):
                 p = start_process(cmd)
                 processes.append(p)
             for p in processes:
+                p.communicate()
                 p.wait()
 
         return self.execute_render(context, render_func)
