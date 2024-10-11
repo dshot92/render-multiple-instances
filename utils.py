@@ -61,6 +61,13 @@ ffmpeg_installed = is_ffmpeg_installed()
 available_encoders = get_encoders() if ffmpeg_installed else []
 
 
+def save_blend_file() -> bool:
+    if not bpy.data.is_saved:
+        return False
+    bpy.ops.wm.save_mainfile()
+    return True
+
+
 def get_blend_file() -> Path:
     return Path(bpy.data.filepath).resolve()
 
@@ -238,7 +245,8 @@ def get_ffmpeg_command_list(context, flipbook_dir: Path) -> list:
     return get_platform_terminal_command_list(ffmpeg_cmd)
 
 
-def open_folder(path) -> None:
+def open_directory(path: Path) -> None:
+    path = str(path)
     match OS.detect_os():
         case OS.WINDOWS:
             os.startfile(path)
@@ -246,13 +254,6 @@ def open_folder(path) -> None:
             subprocess.Popen(["open", path])
         case OS.LINUX:
             subprocess.Popen(["xdg-open", path])
-
-
-def save_blend_file() -> bool:
-    if not bpy.data.is_saved:
-        return False
-    bpy.ops.wm.save_mainfile()
-    return True
 
 
 def start_process(cmd: list) -> subprocess.Popen | None:

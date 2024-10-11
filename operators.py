@@ -9,7 +9,7 @@ import bpy
 from bpy.types import Operator
 
 from .utils import (
-    open_folder,
+    open_directory,
     get_blend_file,
     get_absolute_path,
     get_export_dir,
@@ -76,10 +76,6 @@ class RENDER_OT_Render(Operator):
             self.report({'ERROR'}, f"Failed to create flipbook: {str(e)}")
             return {'CANCELLED'}
         finally:
-            if ffmpeg_installed and (context.scene.render.image_settings.file_format.lower() in ['jpg', 'jpeg', 'png']) and context.scene.RMI_Props.auto_encode:
-                bpy.ops.rmi.ffmpeg_encode()
-            else:
-                self.report({'INFO'}, "Auto encode is disabled.")
 
             self.restore_render_settings(context)
             save_blend_file()
@@ -264,10 +260,10 @@ class RENDER_OT_ffmpeg_encode(Operator):
             return {'CANCELLED'}
 
 
-class UI_OT_open_render_dir(Operator):
-    bl_idname = "rmi.open_render_dir"
-    bl_label = "Open Render Directory"
-    bl_description = "Open Render Directory"
+class UI_OT_open_blend_file_dir(Operator):
+    bl_idname = "rmi.open_blend_file_dir"
+    bl_label = "Open Blend File Directory"
+    bl_description = "Open Blend File Directory"
 
     @classmethod
     def poll(cls, context):
@@ -278,13 +274,10 @@ class UI_OT_open_render_dir(Operator):
         return True
 
     def execute(self, context):
-        path = get_blend_file().parent
+        dir_path = get_blend_file().parent
 
-        if not path.is_dir():
-            self.report({'ERROR'}, "Render Directory not found")
-            return {'CANCELLED'}
+        open_directory(dir_path)
 
-        open_folder(str(path))
         return {'FINISHED'}
 
 
@@ -293,7 +286,7 @@ classes = (
     RENDER_OT_Flipbook_Viewport,
     RENDER_OT_Flipbook_Render,
     RENDER_OT_ffmpeg_encode,
-    UI_OT_open_render_dir,
+    UI_OT_open_blend_file_dir,
 )
 
 register, unregister = bpy.utils.register_classes_factory(classes)

@@ -30,8 +30,8 @@ class RENDER_PT_RenderScriptInstances(bpy.types.Panel):
                          text="Render Animation", icon="RENDER_ANIMATION")
             col.operator("rmi.ffmpeg_encode",
                          text="FFmpeg Encode Render", icon="FILE_MOVIE")
-            col.operator("rmi.open_render_dir",
-                         text="Open Render Directory", icon="FILE_FOLDER")
+            col.operator("rmi.open_blend_file_dir",
+                         text="Open Directory", icon="FILE_FOLDER")
 
         # Flipbook Operations
         header, panel = layout.panel("panel_flipbook", default_closed=False)
