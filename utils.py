@@ -262,7 +262,7 @@ def start_process(cmd: list) -> subprocess.Popen | None:
         case OS.WINDOWS:
             p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
         case OS.MACOS:
-            p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+            p = subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE)
         case OS.LINUX:
             p = subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE)
         case OS.UNKNOWN:
