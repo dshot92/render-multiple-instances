@@ -150,7 +150,7 @@ def set_flipbook_render_output_path(context, render_type: str) -> str:
     # Ensure the directory exists
     os.makedirs(bpy.path.abspath(new_path), exist_ok=True)
 
-    print(f"Output directory: {new_path}")
+    # print(f"Output directory: {new_path}")
     return new_path
 
 
@@ -198,7 +198,7 @@ def get_platform_terminal_command_list(command_list: list) -> list:
         case OS.UNKNOWN:
             raise RuntimeError("Unsupported platform")
 
-    print(f"Command list: {cmd}")
+    # print(f"Command list: {cmd}")
     return cmd
 
 
