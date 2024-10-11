@@ -198,7 +198,8 @@ class RENDER_OT_Flipbook_Render(RenderFlipbookOperatorBase, Operator):
             context.scene.render.filepath = out_dir
             instances = props.instances
 
-            cmd = get_render_command_list(context, out_dir)
+            # cmd = get_render_command_list(context, out_dir)
+            cmd = get_render_command_list(context)
 
             save_blend_file()
 

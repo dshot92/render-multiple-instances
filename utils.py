@@ -121,8 +121,8 @@ def get_render_command_list(context: bpy.types.Context, output_path: str = None)
            "-s", f"{start_frame}", "-e", f"{end_frame}", "-a"]
 
     # Add output path if provided
-    if output_path:
-        cmd.extend(["-o", output_path])
+    # if output_path:
+    #     cmd.extend(["-o", output_path])
 
     return get_platform_terminal_command_list(cmd)
 
