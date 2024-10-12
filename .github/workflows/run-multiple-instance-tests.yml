@@ -1,6 +1,6 @@
 ---
 # yamllint disable rule:line-length
-name: Render Multiple Instances CI
+name: Test Extension
 
 on:
   push:
@@ -31,10 +31,10 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Get required packages for Blender
-        run: |
-          sudo apt-get update -qq
-          # sudo apt-get install -y blender wget python3 python3-pip zip
+      # - name: Get required packages for Blender
+      #   run: |
+      #     sudo apt-get update -qq
+      #     sudo apt-get install -y blender wget python3 python3-pip zip
 
       - name: Get required pip packages
         run: |
@@ -44,13 +44,13 @@ jobs:
       - name: Download Blender
         run: bash .github/bash/download_blender.sh ${{ matrix.blender_version }} blender-bin
 
-      - name: Copy add-on to Blender add-on's directory
+      - name: Copy Extension to Blender config directory
         run: |
           mkdir -p ~/.config/blender/${{ matrix.blender_version }}/extensions/user_default
           cp -r . ~/.config/blender/${{ matrix.blender_version }}/extensions/user_default/render_multiple_instances
 
 
-      - name: Run add-on unittest
+      - name: Run Extension unittest
         run: blender-bin/blender-v${{ matrix.blender_version }}-bin/blender --factory-startup --background -noaudio --python ./tests/run_tests.py
         env:
           RMI_CONSOLE_MODE: true
