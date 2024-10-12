@@ -179,9 +179,10 @@ def create_frame_list(context: bpy.types.Context, flipbook_dir: Path) -> Path:
 
 
 def rendered_frames_exist(flipbook_dir: Path) -> bool:
-    for filename in os.listdir(flipbook_dir):
-        if filename.lower().endswith(EXTENSIONS):
-            return True
+    if flipbook_dir.exists():
+        for filename in os.listdir(flipbook_dir):
+            if filename.lower().endswith(EXTENSIONS):
+                return True
     return False
 
 

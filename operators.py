@@ -225,7 +225,7 @@ class RENDER_OT_ffmpeg_encode(Operator):
         export_dir = get_export_dir()
         if not export_dir.is_dir():
             export_dir = export_dir.parent
-        if not rendered_frames_exist(export_dir) and export_dir.exists():
+        if not rendered_frames_exist(export_dir):
             cls.poll_message_set("No frames in Export Directory.\n")
             return False
 
