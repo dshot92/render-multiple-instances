@@ -22,7 +22,7 @@ class RENDER_PT_RenderScriptInstances(bpy.types.Panel):
 
         # Normal Render Operations
         header, panel = layout.panel("panel_render", default_closed=False)
-        header.label(text="Render Operations", icon="RENDER_ANIMATION")
+        header.label(text="Render Animation", icon="RENDER_ANIMATION")
 
         if panel:
             col = panel.column(align=True)
@@ -35,7 +35,7 @@ class RENDER_PT_RenderScriptInstances(bpy.types.Panel):
 
         # Flipbook Operations
         header, panel = layout.panel("panel_flipbook", default_closed=False)
-        header.label(text="Flipbook Operations", icon="SEQUENCE")
+        header.label(text="Flipbook Animation", icon="SEQUENCE")
 
         if panel:
             col = panel.column(align=True)
@@ -51,24 +51,26 @@ class RENDER_PT_RenderScriptInstances(bpy.types.Panel):
 
         if panel:
             col = panel.column(align=True)
-            col.prop(props, "flipbook_dir", text="Flipbook Dir")
-            col.prop(props, "instances", text="Instances")
-            col.prop(props, "res_percentage", text="Resolution %")
-            col.prop(props, "file_format", text="File Format")
-            col.prop(props, "use_stamp", text="Use Stamp")
-            col.prop(props, "auto_encode", text="Auto Encode")
-
-        # Frame Range Settings
-        header, panel = layout.panel("panel_frame_range", default_closed=True)
-        header.label(text="Frame Range", icon="TIME")
-
-        if panel:
-            col = panel.column(align=True)
+            col.prop(props, "instances", text="Render Instances")
             col.prop(props, "override_range", text="Override Scene Range")
             sub = col.column(align=True)
             sub.active = props.override_range
             sub.prop(props, "start_frame", text="Start Frame")
             sub.prop(props, "end_frame", text="End Frame")
+
+        # Flipbook Settings
+        header, panel = layout.panel(
+            "panel_flipbook_settings", default_closed=False)
+        header.label(text="Flipbook Settings", icon="SETTINGS")
+
+        if panel:
+            col = panel.column(align=True)
+            col.prop(props, "flipbook_dir", text="Flipbook Dir")
+            col.prop(props, "res_percentage", text="Resolution %")
+            col.prop(props, "file_format", text="File Format")
+            col.prop(props, "use_stamp", text="Use Stamp")
+            col.prop(props, "flipbook_auto_encode",
+                     text="Flipbook Auto Encode")
 
         # Encoding Settings
         header, panel = layout.panel("panel_encoding", default_closed=True)

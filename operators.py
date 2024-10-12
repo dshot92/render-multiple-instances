@@ -153,17 +153,17 @@ class RenderFlipbookOperatorBase:
 
             render_func()
 
-            if ffmpeg_installed and context.scene.RMI_Props.auto_encode:
+        except Exception as e:
+            self.report({'ERROR'}, f"Failed to create flipbook: {str(e)}")
+            return {'CANCELLED'}
+        finally:
+            if ffmpeg_installed and context.scene.RMI_Props.flipbook_auto_encode:
                 bpy.ops.rmi.ffmpeg_encode()
             else:
                 self.report(
                     {'INFO'},
                     "Auto encode is disabled. Flipbook images saved without video encoding.")
 
-        except Exception as e:
-            self.report({'ERROR'}, f"Failed to create flipbook: {str(e)}")
-            return {'CANCELLED'}
-        finally:
             self.restore_render_settings(context)
             save_blend_file()
 
@@ -242,10 +242,10 @@ class RENDER_OT_ffmpeg_encode(Operator):
         return True
 
     def execute(self, context):
-        out_dir = get_absolute_path(context.scene.render.filepath)
-
-        cmd = get_ffmpeg_command_list(context, out_dir)
         try:
+            out_dir = get_absolute_path(context.scene.render.filepath)
+
+            cmd = get_ffmpeg_command_list(context, out_dir)
 
             _ = start_process(cmd)
 
