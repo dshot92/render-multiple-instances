@@ -109,8 +109,8 @@ def get_export_dir() -> Path:
 def get_render_command_list(context: bpy.types.Context) -> list:
     props = bpy.context.scene.RMI_Props
 
-    blender_bin_path = get_blender_bin_path()
-    blend_file_path = get_blend_file()
+    blender_bin_path = get_blender_bin_path().as_posix()
+    blend_file_path = get_blend_file().as_posix()
 
     start_frame = context.scene.frame_start
     end_frame = context.scene.frame_end
@@ -120,9 +120,10 @@ def get_render_command_list(context: bpy.types.Context) -> list:
         start_frame = props.start_frame
         end_frame = props.end_frame
 
-    cmd = [f'{blender_bin_path}', "-b", f'{blend_file_path}',
+    cmd = [blender_bin_path, "-b", blend_file_path,
            "-s", f"{start_frame}", "-e", f"{end_frame}", "-a"]
 
+    print("CMD: ", cmd)
     return get_platform_terminal_command_list(cmd)
 
 
