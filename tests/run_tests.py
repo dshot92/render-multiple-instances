@@ -19,7 +19,7 @@ if 'bpy' not in sys.modules:
     sys.modules['bpy'] = MagicMock()
 
 # Discover and run tests
-test_suite = unittest.TestLoader().discover('tests')
+test_suite = unittest.TestLoader().discover('tests', pattern='test_*.py')
 result = unittest.TextTestRunner(verbosity=2).run(test_suite)
 
 # Exit with non-zero status if tests failed
