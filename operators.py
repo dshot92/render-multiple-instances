@@ -110,6 +110,18 @@ class RENDER_OT_Render(RenderFlipbookOperatorBase, Operator):
 
     render_type = 'render'
 
+    @classmethod
+    def poll(cls, context):
+        if context.scene.render.filepath == "":
+            cls.poll_message_set("Render directory not set.")
+            return False
+
+        if not bpy.context.blend_data.is_saved:
+            cls.poll_message_set("Blend file is not saved.")
+            return False
+
+        return True
+
     def execute(self, context):
 
         def render_func():
@@ -125,6 +137,18 @@ class RENDER_OT_Flipbook_Viewport(RenderFlipbookOperatorBase, Operator):
 
     render_type = 'flipbook_viewport'
 
+    @classmethod
+    def poll(cls, context):
+        if context.scene.RMI_Props.flipbook_dir == "":
+            cls.poll_message_set("Flipbooks directory not set.")
+            return False
+
+        if not bpy.context.blend_data.is_saved:
+            cls.poll_message_set("Blend file is not saved.")
+            return False
+
+        return True
+
     def execute(self, context):
         def render_func():
             bpy.ops.render.opengl(animation=True, write_still=True)
@@ -138,6 +162,18 @@ class RENDER_OT_Flipbook_Render(RenderFlipbookOperatorBase, Operator):
     bl_description = "Flipbook Render"
 
     render_type = 'flipbook_render'
+
+    @classmethod
+    def poll(cls, context):
+        if context.scene.RMI_Props.flipbook_dir == "":
+            cls.poll_message_set("Flipbooks directory not set.")
+            return False
+
+        if not bpy.context.blend_data.is_saved:
+            cls.poll_message_set("Blend file is not saved.")
+            return False
+
+        return True
 
     def execute(self, context):
 
@@ -166,8 +202,7 @@ class RENDER_OT_ffmpeg_encode(Operator):
                 "FFmpeg is not installed. Please install FFmpeg first.")
             return False
 
-        saved = bpy.context.blend_data.is_saved
-        if not saved:
+        if not bpy.context.blend_data.is_saved:
             cls.poll_message_set("Blend file is not saved.")
             return False
 
