@@ -19,6 +19,7 @@ from .utils import (
     get_ffmpeg_command_list,
     save_blend_file,
     start_process,
+    rendered_frames_exist,
 )
 
 
@@ -223,15 +224,9 @@ class RENDER_OT_ffmpeg_encode(Operator):
     def poll(cls, context):
         export_dir = get_export_dir()
         if not export_dir.is_dir():
-            cls.poll_message_set(
-                f"Export Directory not found:\n{export_dir}")
-            return False
-
-        file_ext = str(context.scene.render.image_settings.file_format).lower()
-        allowed_ext = file_ext in ('png', 'jpg', 'jpeg')
-        if not allowed_ext:
-            cls.poll_message_set(
-                f"Unsupported file format: {file_ext}")
+            export_dir = export_dir.parent
+        if not rendered_frames_exist(export_dir) and export_dir.exists():
+            cls.poll_message_set("No frames in Export Directory.\n")
             return False
 
         if not ffmpeg_installed:
@@ -247,11 +242,10 @@ class RENDER_OT_ffmpeg_encode(Operator):
         return True
 
     def execute(self, context):
+        out_dir = get_absolute_path(context.scene.render.filepath)
+
+        cmd = get_ffmpeg_command_list(context, out_dir)
         try:
-
-            out_dir = get_absolute_path(context.scene.render.filepath)
-
-            cmd = get_ffmpeg_command_list(context, out_dir)
 
             _ = start_process(cmd)
 

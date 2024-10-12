@@ -15,6 +15,9 @@ from enum import Enum
 import shutil
 
 
+EXTENSIONS = ('png', 'jpg', 'jpeg')
+
+
 class OS(Enum):
     WINDOWS = "Windows"
     MACOS = "MacOS"
@@ -151,15 +154,14 @@ def set_flipbook_render_output_path(context, render_type: str) -> str:
 
 
 def create_frame_list(context: bpy.types.Context, flipbook_dir: Path) -> Path:
-    flipbook_dir = Path(flipbook_dir)
+
     frame_list_file = flipbook_dir / "ffmpeg_frame_list.txt"
     duration = 1 / context.scene.render.fps
-    image_extensions = ('.png', '.jpg', '.jpeg')
     files = []
 
     # Collect all valid image files in the directory
     for filename in os.listdir(flipbook_dir):
-        if filename.lower().endswith(image_extensions):
+        if filename.lower().endswith(EXTENSIONS):
             files.append(flipbook_dir / filename)
 
     # Sort files
@@ -174,6 +176,13 @@ def create_frame_list(context: bpy.types.Context, flipbook_dir: Path) -> Path:
             frame_list.write(f"duration {duration}\n")
 
     return frame_list_file
+
+
+def rendered_frames_exist(flipbook_dir: Path) -> bool:
+    for filename in os.listdir(flipbook_dir):
+        if filename.lower().endswith(EXTENSIONS):
+            return True
+    return False
 
 
 def get_mp4_output_path(context, flipbook_dir: Path) -> Path:
@@ -203,6 +212,10 @@ def get_ffmpeg_command_list(context, flipbook_dir: Path) -> list:
     encoder = props.encoder
     quality = props.quality
     fps = bpy.context.scene.render.fps
+
+    if not flipbook_dir.is_dir():
+        flipbook_dir = flipbook_dir.parent
+
     frame_list_file = create_frame_list(context, flipbook_dir)
     output_file = get_mp4_output_path(context, flipbook_dir)
 
