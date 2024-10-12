@@ -73,7 +73,7 @@ def get_blend_file() -> Path:
 
 
 def get_absolute_path(path: str) -> Path:
-    return (Path(bpy.path.abspath(path))).resolve()
+    return (Path(bpy.path.abspath(path)))
 
 
 def get_blender_bin_path() -> Path:
@@ -103,7 +103,7 @@ def get_export_dir() -> Path:
     return filepath.parent / ''
 
 
-def get_render_command_list(context: bpy.types.Context, output_path: str = None) -> list:
+def get_render_command_list(context: bpy.types.Context) -> list:
     props = bpy.context.scene.RMI_Props
 
     blender_bin_path = get_blender_bin_path()
@@ -119,10 +119,6 @@ def get_render_command_list(context: bpy.types.Context, output_path: str = None)
 
     cmd = [f'{blender_bin_path}', "-b", f'{blend_file_path}',
            "-s", f"{start_frame}", "-e", f"{end_frame}", "-a"]
-
-    # Add output path if provided
-    # if output_path:
-    #     cmd.extend(["-o", output_path])
 
     return get_platform_terminal_command_list(cmd)
 
@@ -154,7 +150,7 @@ def set_flipbook_render_output_path(context, render_type: str) -> str:
     return new_path
 
 
-def create_frame_list(context: bpy.types.Context, flipbook_dir: str) -> Path:
+def create_frame_list(context: bpy.types.Context, flipbook_dir: Path) -> Path:
     flipbook_dir = Path(flipbook_dir)
     frame_list_file = flipbook_dir / "ffmpeg_frame_list.txt"
     duration = 1 / context.scene.render.fps
@@ -180,9 +176,9 @@ def create_frame_list(context: bpy.types.Context, flipbook_dir: str) -> Path:
     return frame_list_file
 
 
-def get_mp4_output_path(context, flipbook_dir: str) -> Path:
-    props = context.scene.RMI_Props
+def get_mp4_output_path(context, flipbook_dir: Path) -> Path:
     flipbook_dir = Path(flipbook_dir)
+    props = context.scene.RMI_Props
     return flipbook_dir.parent / f"{flipbook_dir.name}_{props.encoder}_{props.quality}.mp4"
 
 
