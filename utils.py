@@ -123,7 +123,7 @@ def get_render_command_list(context: bpy.types.Context) -> list:
     cmd = [blender_bin_path, "-b", blend_file_path,
            "-s", f"{start_frame}", "-e", f"{end_frame}", "-a"]
 
-    print("CMD: ", cmd)
+    # print("CMD: ", cmd)
     return get_platform_terminal_command_list(cmd)
 
 
