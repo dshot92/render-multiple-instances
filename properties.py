@@ -6,7 +6,7 @@
 
 import bpy
 
-from .utils import (available_encoders)
+from .utils import (available_encoders, ffmpeg_installed)
 
 
 class RMI_Props(bpy.types.PropertyGroup):
@@ -81,7 +81,7 @@ class RMI_Props(bpy.types.PropertyGroup):
     flipbook_auto_encode: bpy.props.BoolProperty(
         name="Flipbook Auto Encode",
         description="Automatically encode Flipbook",
-        default=True
+        default=ffmpeg_installed
     )
 
     flipbook_dir: bpy.props.StringProperty(

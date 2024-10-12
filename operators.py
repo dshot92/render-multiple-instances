@@ -161,8 +161,7 @@ class RenderFlipbookOperatorBase:
                 bpy.ops.rmi.ffmpeg_encode()
             else:
                 self.report(
-                    {'INFO'},
-                    "Auto encode is disabled. Flipbook images saved without video encoding.")
+                    {'INFO'}, "FFmpeg not found. Encoding will be skipped.")
 
             self.restore_render_settings(context)
             save_blend_file()
