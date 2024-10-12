@@ -10,8 +10,6 @@ from unittest.mock import patch, MagicMock
 from pathlib import Path
 import bpy
 
-# ... rest of the file remains unchanged ...
-
 class TestUtils(unittest.TestCase):
 
     @patch('bpy.path.abspath')
@@ -25,9 +23,7 @@ class TestUtils(unittest.TestCase):
         from different types of input paths, including relative and absolute paths,
         with and without file names or frame numbers.
         """
-        # Setup mock for bpy.context.scene.render.filepath
         mock_context.scene.render.filepath = MagicMock()
-        # Set is_dir to always return False for this test
         mock_is_dir.return_value = False
 
         test_cases = [
@@ -41,13 +37,8 @@ class TestUtils(unittest.TestCase):
         ]
 
         for input_path, expected_output in test_cases:
-            # Set the mock return value for bpy.path.abspath
             mock_abspath.return_value = input_path
-
-            # Call the function
             result = get_export_dir()
-
-            # Assert the result
             self.assertEqual(result, Path(expected_output))
 
     @patch('bpy.path.abspath')
@@ -59,10 +50,7 @@ class TestUtils(unittest.TestCase):
         """
         Test the flipbook_render_output_path function with various scenarios.
         """
-        # Setup mock for bpy.context.scene.RMI_Props
         mock_context.scene.RMI_Props = MagicMock()
-
-        # Mock os.path.exists to return True
         mock_exists.return_value = True
 
         # Test case 1: Absolute path
