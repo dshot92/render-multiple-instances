@@ -69,8 +69,7 @@ class RENDER_PT_RenderScriptInstances(bpy.types.Panel):
             col.prop(props, "res_percentage", text="Resolution %")
             col.prop(props, "file_format", text="File Format")
             col.prop(props, "use_stamp", text="Use Stamp")
-            col.prop(props, "flipbook_auto_encode",
-                     text="Flipbook Auto Encode")
+            col.prop(props, "auto_encode", text="Flipbook Auto Encode")
 
         # Encoding Settings
         header, panel = layout.panel("panel_encoding", default_closed=True)

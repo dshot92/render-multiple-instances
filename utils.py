@@ -127,7 +127,7 @@ def get_render_command_list(context: bpy.types.Context) -> list:
     return get_platform_terminal_command_list(cmd)
 
 
-def set_flipbook_render_output_path(context, render_type: str) -> str:
+def flipbook_render_output_path(context, render_type: str) -> str:
     props = context.scene.RMI_Props
     base_path = str(get_absolute_path(props.flipbook_dir))
 
@@ -279,3 +279,17 @@ def start_process(cmd: list) -> subprocess.Popen | None:
         case OS.UNKNOWN:
             raise RuntimeError("Unsupported platform")
     return p
+
+
+def start_render_instances(context: bpy.types.Context) -> None:
+    instances = context.scene.RMI_Props.instances
+
+    cmd = get_render_command_list(context)
+
+    processes = []
+    for _ in range(instances):
+        p = start_process(cmd)
+        processes.append(p)
+    for p in processes:
+        p.communicate()
+        p.wait()

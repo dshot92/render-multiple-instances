@@ -13,82 +13,19 @@ from .utils import (
     get_blend_file,
     get_absolute_path,
     get_export_dir,
-    get_render_command_list,
-    set_flipbook_render_output_path,
+    flipbook_render_output_path,
     ffmpeg_installed,
     get_ffmpeg_command_list,
     save_blend_file,
     start_process,
     rendered_frames_exist,
+    start_render_instances,
 )
-
-
-class RENDER_OT_Render(Operator):
-    bl_idname = "rmi.render_animation"
-    bl_label = "Render Animation with Instances"
-    bl_description = "Render Animation with Instances"
-
-    def store_render_settings(self, context):
-        self.original_settings = {
-            'use_overwrite': context.scene.render.use_overwrite,
-            'use_placeholder': context.scene.render.use_placeholder,
-            'frame_start': context.scene.frame_start,
-            'frame_end': context.scene.frame_end,
-        }
-
-    def restore_render_settings(self, context):
-        for key, value in self.original_settings.items():
-            if key == 'file_format':
-                context.scene.render.image_settings.file_format = value
-            elif hasattr(context.scene.render, key):
-                setattr(context.scene.render, key, value)
-            elif hasattr(context.scene, key):
-                setattr(context.scene, key, value)
-
-    def update_render_settings(self, context, props):
-        context.scene.render.use_overwrite = False
-        context.scene.render.use_placeholder = True
-        if props.override_range:
-            context.scene.frame_start = props.start_frame
-            context.scene.frame_end = props.end_frame
-
-    def execute(self, context):
-        props = context.scene.RMI_Props
-        self.store_render_settings(context)
-
-        try:
-            self.update_render_settings(context, props)
-            success = save_blend_file()
-            if not success:
-                self.report({'ERROR'}, ), "Blend file is not saved."
-                return {'CANCELLED'}
-            instances = props.instances
-
-            cmd = get_render_command_list(context)
-
-            processes = []
-            for _ in range(instances):
-                p = start_process(cmd)
-                processes.append(p)
-            for p in processes:
-                p.communicate()
-                p.wait()
-
-        except Exception as e:
-            self.report({'ERROR'}, f"Failed to create flipbook: {str(e)}")
-            return {'CANCELLED'}
-        finally:
-
-            self.restore_render_settings(context)
-            save_blend_file()
-
-        self.report({'INFO'}, "Render Created")
-        return {'FINISHED'}
 
 
 class RenderFlipbookOperatorBase:
     """
-    Handle rendering flipbooks
+    Handle rendering
     Steps:
         1. Store scene settings
         2. Save file
@@ -96,12 +33,6 @@ class RenderFlipbookOperatorBase:
         4. Call render
         5. Restore settings
     """
-    @classmethod
-    def poll(cls, context):
-        if not bpy.data.is_saved:
-            cls.poll_message_set("Blend file is not saved.")
-            return False
-        return True
 
     def store_render_settings(self, context):
         self.original_settings = {
@@ -124,32 +55,33 @@ class RenderFlipbookOperatorBase:
             elif hasattr(context.scene, key):
                 setattr(context.scene, key, value)
 
-    def update_render_settings(self, context, props, render_type):
+    def update_render_settings(self, context, render_type):
+        props = context.scene.RMI_Props
+
+        # Flipbook only settings
+        if 'flipbook' in render_type:
+            context.scene.render.resolution_percentage = props.res_percentage
+
+            self.output_dir = flipbook_render_output_path(context, render_type)
+            context.scene.render.filepath = str(self.output_dir)
+
+            context.scene.render.image_settings.file_format = props.file_format
+            context.scene.render.use_stamp = props.use_stamp
+
+        # Render and Flipbook shared settings
         context.scene.render.use_overwrite = False
         context.scene.render.use_placeholder = True
-        context.scene.render.resolution_percentage = props.res_percentage
-
-        # Store the output directory as an attribute of the operator
-        self.output_dir = set_flipbook_render_output_path(context, render_type)
-        context.scene.render.filepath = str(self.output_dir)
-
-        context.scene.render.image_settings.file_format = props.file_format
-        context.scene.render.use_stamp = props.use_stamp
-
         if props.override_range:
             context.scene.frame_start = props.start_frame
             context.scene.frame_end = props.end_frame
 
     def execute_render(self, context, render_func):
-        props = context.scene.RMI_Props
         self.store_render_settings(context)
 
         try:
-            self.update_render_settings(context, props, self.render_type)
-            success = save_blend_file()
-            if not success:
-                self.report({'ERROR'}, ), "Blend file is not saved."
-                return {'CANCELLED'}
+            self.update_render_settings(context, self.render_type)
+
+            save_blend_file()
 
             render_func()
 
@@ -157,7 +89,7 @@ class RenderFlipbookOperatorBase:
             self.report({'ERROR'}, f"Failed to create flipbook: {str(e)}")
             return {'CANCELLED'}
         finally:
-            if ffmpeg_installed and context.scene.RMI_Props.flipbook_auto_encode:
+            if ffmpeg_installed and context.scene.RMI_Props.auto_encode and 'flipbook' in self.render_type:
                 bpy.ops.rmi.ffmpeg_encode()
             else:
                 self.report(
@@ -166,9 +98,24 @@ class RenderFlipbookOperatorBase:
             self.restore_render_settings(context)
             save_blend_file()
 
-        self.report(
-            {'INFO'}, f"Flipbook {self.render_type.capitalize()} Created in {self.output_dir}")
+        self.report({'INFO'}, f"{self.render_type} Created")
+
         return {'FINISHED'}
+
+
+class RENDER_OT_Render(RenderFlipbookOperatorBase, Operator):
+    bl_idname = "rmi.render_animation"
+    bl_label = "Render Animation with Instances"
+    bl_description = "Render Animation with Instances"
+
+    render_type = 'render'
+
+    def execute(self, context):
+
+        def render_func():
+            start_render_instances(context)
+
+        return self.execute_render(context, render_func)
 
 
 class RENDER_OT_Flipbook_Viewport(RenderFlipbookOperatorBase, Operator):
@@ -193,23 +140,9 @@ class RENDER_OT_Flipbook_Render(RenderFlipbookOperatorBase, Operator):
     render_type = 'flipbook_render'
 
     def execute(self, context):
+
         def render_func():
-            props = bpy.context.scene.RMI_Props
-            out_dir = str(self.output_dir)
-            context.scene.render.filepath = out_dir
-            instances = props.instances
-
-            cmd = get_render_command_list(context)
-
-            save_blend_file()
-
-            processes = []
-            for _ in range(instances):
-                p = start_process(cmd)
-                processes.append(p)
-            for p in processes:
-                p.communicate()
-                p.wait()
+            start_render_instances(context)
 
         return self.execute_render(context, render_func)
 
@@ -249,6 +182,7 @@ class RENDER_OT_ffmpeg_encode(Operator):
             _ = start_process(cmd)
 
             return {'FINISHED'}
+
         except Exception as e:
             self.report(
                 {'ERROR'}, f"An error occurred during encoding: {str(e)}")
