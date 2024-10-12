@@ -61,38 +61,49 @@ class TestUtils(unittest.TestCase):
         """
         # Setup mock for bpy.context.scene.RMI_Props
         mock_context.scene.RMI_Props = MagicMock()
-        mock_context.scene.RMI_Props.flipbook_dir = Path("/flipbooks")
-
-        # Mock the return value of bpy.path.abspath to simulate an absolute path
-        mock_abspath.return_value = Path("/flipbooks")
 
         # Mock os.path.exists to return True
         mock_exists.return_value = True
 
-        # Test case 1: No existing directories
+        # Test case 1: Absolute path
+        mock_context.scene.RMI_Props.flipbook_dir = "/flipbooks"
+        mock_abspath.return_value = "/flipbooks"
         mock_listdir.return_value = []
         result = flipbook_render_output_path(mock_context, "flipbook_render")
         expected_output = Path("/flipbooks/flipbook_render_v000")
         self.assertEqual(Path(result), expected_output)
 
-        # Test case 2: Existing directories with non-consecutive versions
-        mock_listdir.return_value = ['flipbook_render_v000', 'flipbook_render_v002']
+        # Test case 2: Relative path (starting with "//")
+        mock_context.scene.RMI_Props.flipbook_dir = "//flipbooks"
+        mock_abspath.return_value = "/base/flipbooks"
+        mock_listdir.return_value = ['flipbook_render_v000']
         result = flipbook_render_output_path(mock_context, "flipbook_render")
-        expected_output = Path("/flipbooks/flipbook_render_v003")
+        expected_output = Path("/base/flipbooks/flipbook_render_v001")
         self.assertEqual(Path(result), expected_output)
 
-        # Test case 3: Existing directories with consecutive versions and missing version
-        mock_listdir.return_value = ['flipbook_render_v001', 'flipbook_render_v002']
+        # Test case 3: Path with existing versions
+        mock_context.scene.RMI_Props.flipbook_dir = "/renders/flipbooks"
+        mock_abspath.return_value = "/renders/flipbooks"
+        mock_listdir.return_value = ['flipbook_render_v000', 'flipbook_render_v001', 'flipbook_render_v003']
         result = flipbook_render_output_path(mock_context, "flipbook_render")
-        expected_output = Path("/flipbooks/flipbook_render_v003")
+        expected_output = Path("/renders/flipbooks/flipbook_render_v004")
         self.assertEqual(Path(result), expected_output)
 
-        # Test case 4: Flipbook viewport render
+        # Test case 4: Different render type
+        mock_context.scene.RMI_Props.flipbook_dir = "/tmp/flipbooks"
+        mock_abspath.return_value = "/tmp/flipbooks"
         mock_listdir.return_value = ['flipbook_viewport_v000']
         result = flipbook_render_output_path(mock_context, "flipbook_viewport")
-        expected_output = Path("/flipbooks/flipbook_viewport_v001")
+        expected_output = Path("/tmp/flipbooks/flipbook_viewport_v001")
         self.assertEqual(Path(result), expected_output)
 
+        # Test case 5: Path with spaces and special characters
+        mock_context.scene.RMI_Props.flipbook_dir = "//My Projects/Blender Renders/Flipbooks!"
+        mock_abspath.return_value = "/home/user/My Projects/Blender Renders/Flipbooks!"
+        mock_listdir.return_value = []
+        result = flipbook_render_output_path(mock_context, "flipbook_render")
+        expected_output = Path("/home/user/My Projects/Blender Renders/Flipbooks!/flipbook_render_v000")
+        self.assertEqual(Path(result), expected_output)
 
 if __name__ == '__main__':
     unittest.main()
