@@ -26,12 +26,12 @@ class RENDER_PT_RenderScriptInstances(bpy.types.Panel):
 
         if panel:
             col = panel.column(align=True)
-            col.operator("rmi.render_animation",
-                         text="Render Animation", icon="RENDER_ANIMATION")
-            col.operator("rmi.ffmpeg_encode",
-                         text="FFmpeg Encode Render", icon="FILE_MOVIE")
-            col.operator("rmi.open_blend_file_dir",
-                         text="Open Directory", icon="FILE_FOLDER")
+            col.operator("rmi.render_animation", text="Render Animation", icon="RENDER_ANIMATION")
+            col.operator("rmi.ffmpeg_encode", text="FFmpeg Encode Render", icon="FILE_MOVIE")
+
+            col.separator()
+
+            col.operator("rmi.open_blend_file_dir", text="Open Directory", icon="FILE_FOLDER")
 
         # Flipbook Operations
         header, panel = layout.panel("panel_flipbook", default_closed=False)
@@ -39,14 +39,11 @@ class RENDER_PT_RenderScriptInstances(bpy.types.Panel):
 
         if panel:
             col = panel.column(align=True)
-            col.operator("rmi.flipbook_viewport",
-                         text="Flipbook Viewport", icon="RESTRICT_VIEW_OFF")
-            col.operator("rmi.flipbook_render",
-                         text="Flipbook Render", icon="RENDER_ANIMATION")
+            col.operator("rmi.flipbook_viewport", text="Flipbook Viewport", icon="RESTRICT_VIEW_OFF")
+            col.operator("rmi.flipbook_render", text="Flipbook Render", icon="RENDER_ANIMATION")
 
         # Render Settings
-        header, panel = layout.panel(
-            "panel_render_settings", default_closed=False)
+        header, panel = layout.panel( "panel_render_settings", default_closed=False)
         header.label(text="Render Settings", icon="SETTINGS")
 
         if panel:
@@ -58,17 +55,12 @@ class RENDER_PT_RenderScriptInstances(bpy.types.Panel):
             sub.prop(props, "start_frame", text="Start Frame")
             sub.prop(props, "end_frame", text="End Frame")
 
-        # Flipbook Settings
-        header, panel = layout.panel(
-            "panel_flipbook_settings", default_closed=False)
-        header.label(text="Flipbook Settings", icon="SETTINGS")
+            col.separator()
 
-        if panel:
-            col = panel.column(align=True)
             col.prop(props, "flipbook_dir", text="Flipbook Dir")
-            col.prop(props, "res_percentage", text="Resolution %")
-            col.prop(props, "file_format", text="File Format")
-            col.prop(props, "use_stamp", text="Use Stamp")
+            col.prop(props, "res_percentage", text="Flipbook Res %")
+            # col.prop(props, "file_format", text="File Format")
+            col.prop(props, "use_stamp", text="Flipbook Stamp Metadata")
             col.prop(props, "auto_encode", text="Flipbook Auto Encode")
 
         # Encoding Settings
