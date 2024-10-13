@@ -5,6 +5,8 @@ name: Test Extension
 on:
   push:
     branches:
+      - main
+      - dev
       - test
     tags:
       - "v*"
