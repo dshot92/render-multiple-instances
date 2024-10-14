@@ -23,7 +23,6 @@ jobs:
       WORKSPACE: ${{ github.workspace }}
       BLENDER_DOWNLOAD: ${{ github.workspace }}/blender_download
       BLENDER_EXTRACT: ${{ github.workspace }}/blender_extract
-      BUILD_PATH: ${{ github.workspace }}/build
 
     strategy:
       fail-fast: false
@@ -53,8 +52,11 @@ jobs:
           mkdir -p ~/.config/blender/${{ matrix.blender_version }}/extensions/user_default
           cp -r . ~/.config/blender/${{ matrix.blender_version }}/extensions/user_default/render_multiple_instances
 
+      - name: Set Blender path
+        run: |
+          echo "BLENDER_PATH=$(find "${{ env.BLENDER_EXTRACT }}" -type f -name blender)" >> $GITHUB_ENV
 
       - name: Run Extension unittest
-        run: ${{ env.BLENDER_PATH }}/blender-v${{ matrix.blender_version }}-bin/blender --factory-startup --background -noaudio --python ./tests/run_tests.py
+        run: ${{ env.BLENDER_PATH }} --factory-startup --background -noaudio --python ./tests/run_tests.py
         env:
           RMI_CONSOLE_MODE: true
