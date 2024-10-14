@@ -1,15 +1,15 @@
 name: Build Extension
 
-on:
-  push:
-    branches:
-      # - main
-      # - dev
-      # - test
-  # pull_request:
-  #   branches:
-  #     - main
-  workflow_dispatch:  # Allows manual triggering from the Actions tab
+# on:
+#   push:
+#     branches:
+#       - main
+#       - dev
+#       - test
+#   pull_request:
+#     branches:
+#       - main
+#   workflow_dispatch:  # Allows manual triggering from the Actions tab
 
 jobs:
     build:
