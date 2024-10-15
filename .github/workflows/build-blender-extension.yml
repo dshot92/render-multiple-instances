@@ -1,4 +1,4 @@
-name: Build Extension
+name: Old - Build Extension
 
 on:
   push:

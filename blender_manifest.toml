@@ -1,7 +1,7 @@
 schema_version = "1.0.0"
 
 id = "render_multiple_instances"
-version = "3.2.0"
+version = "3.2.1"
 name = "Render Multiple Instances"
 tagline = "Render animations and Flipbooks faster with multiple instances"
 maintainer = "Daniele Stochino <dshot92@gmail.com>"

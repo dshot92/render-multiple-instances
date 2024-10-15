@@ -197,11 +197,19 @@ def get_platform_terminal_command_list(command_list: list) -> list:
     cmd = []
     match OS.detect_os():
         case OS.WINDOWS:
-            cmd = ["start", "cmd", '/c', ] + command_list
+            return ["start", "cmd", '/c'] + command_list
         case OS.MACOS:
-            cmd = ["open", "-a", "Terminal.app", "--args"] + command_list
+            # Escape the command for use in AppleScript
+            escaped_cmd = ' '.join(shlex.quote(arg) for arg in command_list)
+            apple_script = f'''
+            tell application "Terminal"
+                do script "{escaped_cmd}"
+                activate
+            end tell
+            '''
+            return ['osascript', '-e', apple_script]
         case OS.LINUX:
-            cmd = ["x-terminal-emulator", "-e"] + command_list
+            return ["x-terminal-emulator", "-e"] + command_list
         case OS.UNKNOWN:
             raise RuntimeError("Unsupported platform")
 
@@ -271,11 +279,14 @@ def start_process(cmd: list) -> subprocess.Popen | None:
     p = None
     match OS.detect_os():
         case OS.WINDOWS:
-            p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
+            p = subprocess.Popen(
+                cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         case OS.MACOS:
-            p = subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE)
+            p = subprocess.Popen(
+                cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         case OS.LINUX:
-            p = subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE)
+            p = subprocess.Popen(
+                cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         case OS.UNKNOWN:
             raise RuntimeError("Unsupported platform")
     return p
@@ -283,13 +294,15 @@ def start_process(cmd: list) -> subprocess.Popen | None:
 
 def start_render_instances(context: bpy.types.Context) -> None:
     instances = context.scene.RMI_Props.instances
-
     cmd = get_render_command_list(context)
 
     processes = []
     for _ in range(instances):
         p = start_process(cmd)
         processes.append(p)
-    for p in processes:
-        p.communicate()
-        p.wait()
+
+    # For macOS, we don't wait for the processes as they're running in separate Terminal windows
+    if OS.detect_os() != OS.MACOS:
+        for p in processes:
+            p.communicate()
+            p.wait()
