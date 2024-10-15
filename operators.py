@@ -89,11 +89,16 @@ class RenderFlipbookOperatorBase:
             self.report({'ERROR'}, f"Failed to create flipbook: {str(e)}")
             return {'CANCELLED'}
         finally:
-            if ffmpeg_installed and context.scene.RMI_Props.auto_encode and 'flipbook' in self.render_type:
+
+            export_dir = get_export_dir()
+            if (export_dir.is_dir() and
+                rendered_frames_exist(export_dir) and
+                ffmpeg_installed and
+                context.scene.RMI_Props.auto_encode and
+                    'flipbook' in self.render_type):
                 bpy.ops.rmi.ffmpeg_encode()
             else:
-                self.report(
-                    {'INFO'}, "FFmpeg not found. Encoding will be skipped.")
+                self.report({'INFO'}, "Encoding Skipped.")
 
             self.restore_render_settings(context)
             save_blend_file()
