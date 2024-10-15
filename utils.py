@@ -197,7 +197,6 @@ def get_platform_terminal_command_list(command_list: list) -> list:
     cmd = []
     match OS.detect_os():
         case OS.WINDOWS:
-            # For Windows, we return the command as-is
             return ["start", "cmd", '/c'] + command_list
         case OS.MACOS:
             # Escape the command for use in AppleScript
@@ -210,9 +209,7 @@ def get_platform_terminal_command_list(command_list: list) -> list:
             '''
             return ['osascript', '-e', apple_script]
         case OS.LINUX:
-            # For Linux, we quote args
-            quoted_list = [shlex.quote(arg) for arg in command_list]
-            return ["x-terminal-emulator", "-e"] + quoted_list
+            return ["x-terminal-emulator", "-e"] + command_list
         case OS.UNKNOWN:
             raise RuntimeError("Unsupported platform")
 
