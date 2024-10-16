@@ -6,9 +6,10 @@
 
 import importlib
 
-from . import properties, operators, panels
+from . import preference, properties, operators, panels
 
 modules = [
+    preference,
     properties,
     operators,
     panels,
@@ -16,6 +17,7 @@ modules = [
 
 
 if "bpy" in locals():
+    importlib.reload(preference)
     importlib.reload(properties)
     importlib.reload(operators)
     importlib.reload(panels)
