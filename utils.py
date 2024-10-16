@@ -16,6 +16,7 @@ import shutil
 import datetime
 import inspect
 
+from .preference import getPreferences
 
 EXTENSIONS = ('png', 'jpg', 'jpeg')
 
@@ -214,7 +215,8 @@ def get_platform_terminal_command_list(command_list: list) -> list:
         case OS.UNKNOWN:
             raise RuntimeError("Unsupported platform")
 
-    debug_print(message=f"Cmd: {cmd}")
+    if getPreferences().debug_prints:
+        debug_print(message=f"Cmd: {cmd}")
 
     return cmd
 
@@ -263,7 +265,8 @@ def get_ffmpeg_command_list(context, flipbook_dir: Path) -> list:
     ffmpeg_cmd.append("-y")
     ffmpeg_cmd.append(str(output_file))
 
-    debug_print(message=f"Cmd: {ffmpeg_cmd}")
+    if getPreferences().debug_prints:
+        debug_print(message=f"Cmd: {ffmpeg_cmd}")
 
     return get_platform_terminal_command_list(ffmpeg_cmd)
 
@@ -294,7 +297,8 @@ def start_process(cmd: list) -> subprocess.Popen | None:
         case OS.UNKNOWN:
             raise RuntimeError("Unsupported platform")
 
-    debug_print(message=f"Cmd: {cmd}")
+    if getPreferences().debug_prints:
+        debug_print(message=f"Cmd: {cmd}")
 
     return p
 
@@ -303,7 +307,8 @@ def start_render_instances(context: bpy.types.Context) -> None:
     instances = context.scene.RMI_Props.instances
     cmd = get_render_command_list(context)
 
-    debug_print(message=f"Cmd: {cmd}")
+    if getPreferences().debug_prints:
+        debug_print(message=f"Cmd: {cmd}")
 
     processes = []
     for _ in range(instances):
