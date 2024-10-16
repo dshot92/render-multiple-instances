@@ -13,6 +13,8 @@ import subprocess
 from pathlib import Path
 from enum import Enum
 import shutil
+import datetime
+import inspect
 
 
 EXTENSIONS = ('png', 'jpg', 'jpeg')
@@ -150,7 +152,6 @@ def flipbook_render_output_path(context, render_type: str) -> str:
     # Ensure the directory exists
     os.makedirs(bpy.path.abspath(new_path), exist_ok=True)
 
-    # print(f"Output directory: {new_path}")
     return new_path
 
 
@@ -213,7 +214,8 @@ def get_platform_terminal_command_list(command_list: list) -> list:
         case OS.UNKNOWN:
             raise RuntimeError("Unsupported platform")
 
-    # print(f"Command list: {cmd}")
+    debug_print(message=f"Cmd: {cmd}")
+
     return cmd
 
 
@@ -261,6 +263,8 @@ def get_ffmpeg_command_list(context, flipbook_dir: Path) -> list:
     ffmpeg_cmd.append("-y")
     ffmpeg_cmd.append(str(output_file))
 
+    debug_print(message=f"Cmd: {ffmpeg_cmd}")
+
     return get_platform_terminal_command_list(ffmpeg_cmd)
 
 
@@ -289,12 +293,17 @@ def start_process(cmd: list) -> subprocess.Popen | None:
                 cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         case OS.UNKNOWN:
             raise RuntimeError("Unsupported platform")
+
+    debug_print(message=f"Cmd: {cmd}")
+
     return p
 
 
 def start_render_instances(context: bpy.types.Context) -> None:
     instances = context.scene.RMI_Props.instances
     cmd = get_render_command_list(context)
+
+    debug_print(message=f"Cmd: {cmd}")
 
     processes = []
     for _ in range(instances):
@@ -306,3 +315,20 @@ def start_render_instances(context: bpy.types.Context) -> None:
         for p in processes:
             p.communicate()
             p.wait()
+
+
+def get_timestamp() -> str:
+    return datetime.datetime.now().strftime("%H:%M:%S.%f")[:-4]
+
+
+def debug_print(*, message: str, function_name: str = None, timestamp: bool = True) -> None:
+    if function_name is None:
+        function_name = inspect.currentframe().f_back.f_code.co_name
+
+    output = []
+    if timestamp:
+        output.append(f"\033[36m[{get_timestamp()}]\033[0m")  # Cyan for timestamp
+    output.append(f"\033[33m{function_name}:\033[0m")  # Yellow for function name
+    output.append(f"\033[32m{message}\033[0m")  # Green for message
+
+    print(" ".join(output))
