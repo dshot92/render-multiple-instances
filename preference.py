@@ -30,9 +30,12 @@ class RMI_Preferences(bpy.types.AddonPreferences):
     def draw(self, context):
         layout = self.layout
 
-        box = layout.box()
-        box.label(text="Debugging")
-        box.prop(self, "debug_prints")
+        # box = layout.box() 
+        header, panel = layout.panel("panel_debug", default_closed=False)
+        header.label(text="Debugging", icon="SETTINGS")
+        if panel:
+            # col = panel.column(align=True)
+            panel.prop(self, "debug_prints")
 
 
 classes = (RMI_Preferences,)
