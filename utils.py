@@ -16,7 +16,6 @@ import shutil
 import datetime
 import inspect
 
-from .preference import getPreferences
 
 EXTENSIONS = ('png', 'jpg', 'jpeg')
 
@@ -215,8 +214,7 @@ def get_platform_terminal_command_list(command_list: list) -> list:
         case OS.UNKNOWN:
             raise RuntimeError("Unsupported platform")
 
-    if getPreferences().debug_prints:
-        debug_print(message=f"Cmd: {cmd}")
+    debug_print(message=f"Cmd: {cmd}")
 
     return cmd
 
@@ -265,9 +263,7 @@ def get_ffmpeg_command_list(context, flipbook_dir: Path) -> list:
     ffmpeg_cmd.append("-y")
     ffmpeg_cmd.append(str(output_file))
 
-    if getPreferences().debug_prints:
-        debug_print(message=f"Cmd: {ffmpeg_cmd}")
-
+    debug_print(message=f"FFmpeg Cmd: {ffmpeg_cmd}")
     return get_platform_terminal_command_list(ffmpeg_cmd)
 
 
@@ -297,8 +293,7 @@ def start_process(cmd: list) -> subprocess.Popen | None:
         case OS.UNKNOWN:
             raise RuntimeError("Unsupported platform")
 
-    if getPreferences().debug_prints:
-        debug_print(message=f"Cmd: {cmd}")
+    debug_print(message=f"Cmd: {cmd}")
 
     return p
 
@@ -307,8 +302,7 @@ def start_render_instances(context: bpy.types.Context) -> None:
     instances = context.scene.RMI_Props.instances
     cmd = get_render_command_list(context)
 
-    if getPreferences().debug_prints:
-        debug_print(message=f"Cmd: {cmd}")
+    debug_print(message=f"Cmd: {cmd}")
 
     processes = []
     for _ in range(instances):
@@ -327,13 +321,18 @@ def get_timestamp() -> str:
 
 
 def debug_print(*, message: str, function_name: str = None, timestamp: bool = True) -> None:
-    if function_name is None:
-        function_name = inspect.currentframe().f_back.f_code.co_name
+    context = bpy.context
+    preferences = context.preferences
+    addon_preferences = preferences.addons[__package__].preferences
 
-    output = []
-    if timestamp:
-        output.append(f"\033[36m[{get_timestamp()}]\033[0m")  # Cyan for timestamp
-    output.append(f"\033[33m{function_name}:\033[0m")  # Yellow for function name
-    output.append(f"\033[32m{message}\033[0m")  # Green for message
+    if not addon_preferences.debug_prints:
+        if function_name is None:
+            function_name = inspect.currentframe().f_back.f_code.co_name
 
-    print(" ".join(output))
+        output = []
+        if timestamp:
+            output.append(f"\033[36m[{get_timestamp()}]\033[0m")  # Cyan for timestamp
+        output.append(f"\033[33m{function_name}:\033[0m")  # Yellow for function name
+        output.append(f"\033[32m{message}\033[0m")  # Green for message
+
+        print(" ".join(output))

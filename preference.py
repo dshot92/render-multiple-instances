@@ -7,14 +7,6 @@
 import bpy
 
 
-def getPreferences(context=None):
-    if context is None:
-        context = bpy.context
-    preferences = context.preferences
-    addon_preferences = preferences.addons[__package__].preferences
-    return addon_preferences
-
-
 class RMI_Preferences(bpy.types.AddonPreferences):
     # this must match the add-on name, use '__package__'
     # when defining this in a submodule of a python package.
